@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>FRUTIQ – Energy Drink</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@600;700;800&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header class="nav">
+  <div class="logo">FRUTIQ</div>
+  <nav>
+    <a href="index.html">Home</a>
+    <a href="shop.html">Shop</a>
+    <a href="about.html">About</a>
+    <a href="contact.html">Contact</a>
+  </nav>
+
+</header>
+
+<section class="hero">
+
+  <!-- Background -->
+  <div class="bg" id="bg"></div>
+  <div class="overlay" id="overlay"></div>
+
+  <!-- Big text -->
+  <h1 class="bg-text animate-text" id="bgText">MANGO</h1>
+
+  <!-- Slices -->
+  <img id="sliceLeft"  class="fruit f-left animate-slice"  src="images/mango-1.png">
+  <img id="sliceTop"   class="fruit f-top animate-slice"   src="images/mango-2.png">
+  <img id="sliceRight" class="fruit f-right animate-slice" src="images/mango-3.png">
+
+  <!-- Can -->
+  <img id="mainCan" class="can animate-can" src="images/can-mango.png">
+
+  <!-- Content -->
+  <div class="content">
+    <h2 id="title">Mango Rush</h2>
+    <p id="desc" style="margin-bottom: 14px;">
+      Tropical power. Instant energy.
+    </p>
+
+    <a href="shop.html" class="shop-btn">Shop Now</a>
+
+  </div>
+  <div class="price-text">$49</div>
+
+
+  <!-- Slider -->
+  <div class="flavour-slider">
+    <button class="arrow" onclick="prevFlavour()">&#10094;</button>
+
+    <div class="flavour-items">
+      <img src="images/can-mango.png" onclick="setFlavour('mango')">
+      <img src="images/can-apple.png" onclick="setFlavour('apple')">
+      <img src="images/can-strawberry.png" onclick="setFlavour('strawberry')">
+    </div>
+
+    <button class="arrow" onclick="nextFlavour()">&#10095;</button>
+  </div>
+
+</section>
+
+<script>
+const flavours = {
+  mango: {
+    bg: "images/bg-mango.jpg",
+    text: "MANGO",
+    title: "Mango Rush",
+    desc: "Tropical power. Instant energy.",
+    can: "images/can-mango.png",
+    slices: ["images/mango-1.png","images/mango-2.png","images/mango-3.png"],
+    overlay: "rgba(255,180,60,0.55)"
+  },
+  apple: {
+    bg: "images/bg-apple.jpg",
+    text: "APPLE",
+    title: "Apple Blast",
+    desc: "Crisp energy. Fresh punch.",
+    can: "images/can-apple.png",
+    slices: ["images/apple-1.png","images/apple-2.png","images/apple-3.png"],
+    overlay: "rgba(255,80,80,0.3)"
+  },
+  strawberry: {
+    bg: "images/bg-strawberry.jpg",
+    text: "BERRY",
+    title: "Strawberry Spark",
+    desc: "Berry bold. Charged taste.",
+    can: "images/can-strawberry.png",
+    slices: ["images/strawberry-1.png","images/strawberry-2.png","images/strawberry-3.png"],
+    overlay: "rgba(255,100,160,0.35)"
+  }
+};
+
+const order = ["mango","apple","strawberry"];
+let index = 0;
+
+function restart(el, cls) {
+  el.classList.remove(cls);
+  void el.offsetWidth;
+  el.classList.add(cls);
+}
+
+function setFlavour(name) {
+  index = order.indexOf(name);
+  const f = flavours[name];
+
+  const bgText = document.getElementById("bgText");
+  const can = document.getElementById("mainCan");
+  const l = document.getElementById("sliceLeft");
+  const t = document.getElementById("sliceTop");
+  const r = document.getElementById("sliceRight");
+
+  document.getElementById("bg").style.backgroundImage = `url('${f.bg}')`;
+  document.getElementById("overlay").style.background =
+    `radial-gradient(circle at center, ${f.overlay}, transparent 70%)`;
+
+  bgText.innerText = f.text;
+  document.getElementById("title").innerText = f.title;
+  document.getElementById("desc").innerText = f.desc;
+
+  can.src = f.can;
+  l.src = f.slices[0];
+  t.src = f.slices[1];
+  r.src = f.slices[2];
+
+  restart(bgText,"animate-text");
+  restart(can,"animate-can");
+  restart(l,"animate-slice");
+  restart(t,"animate-slice");
+  restart(r,"animate-slice");
+}
+
+function nextFlavour() {
+  index = (index + 1) % order.length;
+  setFlavour(order[index]);
+}
+
+function prevFlavour() {
+  index = (index - 1 + order.length) % order.length;
+  setFlavour(order[index]);
+}
+// 🔁 AUTO SLIDE EVERY 5 SECONDS (NO MANUAL CHANGE)
+setInterval(() => {
+  nextFlavour();
+}, 7000);
+
+window.onload = () => setFlavour("mango");
+</script>
+
+</body>
+</html>

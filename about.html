@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>About – FRUTIQ</title>
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@500;600;700;800&display=swap" rel="stylesheet">
+  
+  <link rel="stylesheet" href="style.css">
+
+  <style>
+    :root {
+      --mango: #ffb13b;
+      --mango-light: #fff8ee;
+      --dark-text: #2d3436;
+      --gray-text: #636e72;
+    }
+
+    body {
+      background-image:url("images/bg-mango.jpg");
+      background-size: cover;
+      margin: 0;
+      font-family: 'Quicksand', sans-serif;
+    }
+
+    /* --- CENTERED HERO SECTION --- */
+    .about-hero {
+      padding: 100px 10%;
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 60vh;
+    }
+
+    .about-hero h1 {
+      font-size: 52px;
+      font-weight: 800;
+      color: var(--dark-text);
+      margin-bottom: 10px;
+    }
+
+    .about-hero .mission-tag {
+      background: var(--mango-light);
+      color: var(--mango);
+      padding: 8px 20px;
+      border-radius: 50px;
+      font-weight: 700;
+      font-size: 14px;
+      text-transform: uppercase;
+      margin-bottom: 20px;
+      letter-spacing: 1px;
+    }
+
+    .about-hero p {
+      max-width: 700px;
+      font-size: 18px;
+      line-height: 1.8;
+      color: var(--gray-text);
+      margin-bottom: 30px;
+    }
+
+    /* --- THREE PILLARS SECTION --- */
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 30px;
+      width: 100%;
+      max-width: 1100px;
+      margin-top: 50px;
+    }
+
+    .feature-card {
+      background: white;
+      padding: 40px 30px;
+      border-radius: 25px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.03);
+      transition: transform 0.3s;
+      border: 1px solid #f1f1f1;
+    }
+
+    .feature-card:hover {
+      transform: translateY(-10px);
+      border-color: var(--mango);
+    }
+
+    .feature-card .icon {
+      font-size: 40px;
+      margin-bottom: 5px;
+      display: block;
+    }
+
+    .feature-card h3 {
+      font-size: 22px;
+      font-weight: 700;
+      margin-bottom: 3px;
+      color: var(--dark-text);
+    }
+
+    .feature-card p {
+      font-size: 15px;
+      color: var(--gray-text);
+      line-height: 1.6;
+    }
+
+    /* --- CALL TO ACTION --- */
+    .about-cta {
+      background: var(--mango);
+      margin: 80px 10%;
+      padding: 60px;
+      border-radius: 30px;
+      text-align: center;
+      color: white;
+    }
+
+    .about-cta h2 {
+      font-size: 36px;
+      margin-bottom: 15px;
+    }
+
+    .about-cta button {
+      background: white;
+      color: var(--mango);
+      border: none;
+      padding: 15px 40px;
+      border-radius: 12px;
+      font-weight: 700;
+      font-size: 16px;
+      cursor: pointer;
+      margin-top: 10px;
+      transition: 0.3s;
+    }
+
+    .about-cta button:hover {
+      transform: scale(1.05);
+      box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+    }
+
+    @media (max-width: 768px) {
+      .about-hero h1 { font-size: 36px; }
+      .about-cta { padding: 40px 20px; }
+    }
+  </style>
+</head>
+<body>
+
+<header class="nav">
+  <div class="logo">FRUTIQ</div>
+  <nav>
+    <a href="index.html">Home</a>
+    <a href="shop.html">Shop</a>
+    <a class="active" href="about.html">About</a>
+    <a href="contact.html">Contact</a>
+  </nav>
+</header>
+
+<main class="about-hero">
+  <span class="mission-tag">Our Philosophy</span>
+  <h1>Energy Made Natural</h1>
+  <p>
+    At FRUTIQ, we believe that energy shouldn't come from a chemistry lab. 
+    Born in the heart of the fruit valley, we've spent years perfecting a blend 
+    that gives you the spark you need without the artificial crash. 
+    It’s clean, it’s crisp, and it’s unapologetically fruity.
+  </p>
+
+  <div class="features-grid">
+    <div class="feature-card">
+      <span class="icon">🍎</span>
+      <h3>Real Ingredients</h3>
+      <p>We source our fruits from local sustainable farms. No high-fructose corn syrup, just pure nectar.</p>
+    </div>
+
+    <div class="feature-card">
+      <span class="icon">⚡</span>
+      <h3>Natural Caffeine</h3>
+      <p>Our energy comes from Green Tea extract and Guarana, providing a steady flow of focus for 6+ hours.</p>
+    </div>
+
+    <div class="feature-card">
+      <span class="icon">♻️</span>
+      <h3>Eco-Conscious</h3>
+      <p>Every can of FRUTIQ is 100% recyclable. We love the planet as much as we love great flavor.</p>
+    </div>
+  </div>
+</main>
+
+<section class="about-cta">
+  <h2>Ready to taste the future?</h2>
+  <p>Join the thousands of people switching to natural energy.</p>
+  <button onclick="location.href='shop.html'">Visit the Shop</button>
+</section>
+
+</body>
+</html>

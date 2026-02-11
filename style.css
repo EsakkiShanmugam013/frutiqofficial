@@ -1,0 +1,301 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: "Segoe UI", sans-serif;
+}
+
+body {
+  
+  color: #fff;
+  overflow: hidden;
+}
+a {
+  text-decoration: none;   /* remove underline */
+  color: inherit;          /* use parent text color */
+}
+
+/* NAVBAR */
+.nav a {
+  color: #fff;
+  opacity: 0.85;
+  transition: opacity 0.3s ease;
+  font-weight: 600;
+}
+
+.nav a:hover {
+  opacity: 1;
+}
+
+.nav {
+  position: fixed;
+  top: 0;
+  width: 100%;
+  padding: 20px 60px;
+  display: flex;
+  justify-content: space-between;
+  z-index: 20;
+}
+
+.nav a {
+  margin-left: 25px;
+  cursor: pointer;
+}
+
+.logo {
+  font-family: "Quicksand", sans-serif;
+  font-size: 36px;
+  font-weight: 700;
+}
+
+/* HERO */
+.hero {
+  position: relative;
+  width: 100%;
+  height: 100vh;
+  overflow: hidden;
+}
+
+/* BACKGROUND */
+.bg {
+  position: absolute;
+  inset: 0;
+  background-size: cover;
+  background-position: center;
+  transform: scale(1.1);
+  z-index: 1;
+}
+
+.overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+}
+
+/* BIG TEXT */
+.bg-text {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  font-size: 22vw;
+  font-weight: 900;
+  letter-spacing: 14px;
+  transform: translate(-50%, -50%);
+  z-index: 3;
+  text-shadow: 0 0 40px rgba(255,255,255,.4);
+}
+
+/* CAN */
+.can {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 480px;
+  transform: translate(-50%, -50%);
+  z-index: 10;
+  filter: drop-shadow(0 45px 60px rgba(0,0,0,.75));
+}
+
+/* FRUITS */
+.fruit {
+  position: absolute;
+  z-index: 6;
+}
+
+.f-left { left: 4%; top: 18%; width: 300px; }
+.f-top  { right: 6%; top: 16%; width: 170px; }
+.f-right{ right: 5%; top: 60%; width: 400px; }
+
+/* CONTENT */
+.content {
+  position: absolute;
+  left: 8%;
+  
+  bottom: 10%;
+  
+  z-index: 8;
+}
+
+.content h2 { font-size: 42px; }
+.content button {
+  padding: 12px 32px;
+  border-radius: 30px;
+  border: none;
+  font-weight: bold;
+}
+.shop-btn {
+  display: inline-block;
+  padding: 12px 34px;
+  border-radius: 30px;
+  background: #ffffff;
+  color: #000;
+  font-weight: bold;
+  text-decoration: none;
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.shop-btn:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 12px 25px rgba(0,0,0,0.35);
+}
+
+
+/* SLIDER */
+.flavour-slider {
+  position: absolute;
+  bottom: 5px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 10px 22px;
+  border-radius: 40px;
+  background: rgba(255,255,255,0.22);
+  backdrop-filter: blur(12px);
+  z-index: 999;
+}
+
+.flavour-items img {
+  width: 45px;
+  cursor: pointer;
+}
+
+.arrow {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: none;
+  cursor: pointer;
+}
+
+/* ANIMATIONS */
+.animate-can {
+  animation: canDrop 2.6s ease forwards, floatCan 6s ease-in-out infinite 1.8s;
+}
+.animate-slice.f-left {
+  animation: sliceFromLeft 1.2s ease, floatBottom 6s infinite 2s;
+}
+.animate-slice.f-top {
+  animation: sliceFromRight 1.2s ease, floatTop 6s infinite 2s;
+}
+.animate-slice.f-right {
+  animation: sliceFromBottom 1.2s ease, floatBottom 6s infinite 2s;
+}
+.animate-text {
+  animation: mangoSlideIn 3s ease;
+}
+
+/* KEYFRAMES */
+@keyframes mangoSlideIn {
+  from { transform: translate(-160%, -50%); opacity: 0; }
+  to { transform: translate(-50%, -50%); opacity: 1; }
+}
+
+@keyframes canDrop {
+  from { transform: translate(-50%, -140%); opacity: 0; }
+  to { transform: translate(-50%, -50%); opacity: 1; }
+}
+
+@keyframes floatCan {
+  50% { transform: translate(-50%, -55%); }
+}
+
+@keyframes sliceFromLeft {
+  from { transform: translateX(-300px); opacity: 0; }
+  to { transform: translateX(0); opacity: 1; }
+}
+
+@keyframes sliceFromRight {
+  from { transform: translateX(300px); opacity: 0; }
+  to { transform: translateX(0); opacity: 1; }
+}
+
+@keyframes sliceFromBottom {
+  from { transform: translateY(300px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+@keyframes floatTop { 50% { transform: translateY(-20px); } }
+@keyframes floatBottom { 50% { transform: translateY(20px); } }
+.price-text {
+  position: absolute;
+  bottom: 100px;   /* adjust based on slider height */
+  width: 100%;
+  text-align: center;
+  font-size: 30px;
+  font-weight: 600;
+  color: #ffffff;
+  z-index: 5;
+}
+/* =========================
+   COMMON PAGES
+========================= */
+.page {
+  min-height: 100vh;
+  background-image:url("images/bg-mango.jpg");
+  background-size: cover;
+  color: #111;
+  padding: 120px 60px;
+}
+
+
+.page-title {
+  font-family: "Quicksand", sans-serif;
+  font-size: 36px;
+  font-weight: 700;
+}
+
+.products {
+  display: flex;
+  gap: 40px;
+  flex-wrap: wrap;
+}
+
+.card {
+  background: rgba(255,255,255,0.08);
+  border-radius: 20px;
+  padding: 30px;
+  width: 280px;
+  text-align: center;
+  backdrop-filter: blur(10px);
+}
+
+.card img {
+  width: 160px;
+  margin-bottom: 20px;
+}
+
+.card button {
+  margin-top: 15px;
+}
+
+/* ABOUT */
+.about-text {
+  max-width: 700px;
+  font-size: 18px;
+  line-height: 1.6;
+  margin-bottom: 20px;
+}
+
+/* CONTACT */
+.contact-form {
+  max-width: 500px;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.contact-form input,
+.contact-form textarea {
+  padding: 14px;
+  border-radius: 10px;
+  border: none;
+  font-size: 16px;
+}
+
+.contact-form textarea {
+  height: 120px;
+}
+
+

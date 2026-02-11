@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FRUTIQ – Shop</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="shop.css">
+
+<style>
+  /* --- PROFESSIONAL MODAL STYLING --- */
+  .order-modal {
+    position: fixed; top: 50%; left: 50%;
+    transform: translate(-50%, -50%) scale(0.9);
+    background: #fff; width: 95%; max-width: 800px; max-height: 90vh;
+    overflow-y: auto; border-radius: 24px; padding: 40px;
+    box-shadow: 0 30px 60px rgba(0,0,0,0.15); z-index: 1000;
+    opacity: 0; visibility: hidden;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    font-family: 'Quicksand', sans-serif;
+  }
+  .order-modal.show { opacity: 1; visibility: visible; transform: translate(-50%, -50%) scale(1); }
+
+  .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+  .full-width { grid-column: span 2; }
+
+  .order-modal input, .order-modal textarea {
+    width: 100%; padding: 14px; border: 2px solid #f2f2f2;
+    border-radius: 12px; font-family: inherit; font-size: 15px; box-sizing: border-box;
+  }
+
+  .section-box {
+    background: #fcfcfc; border: 1px solid #eee;
+    border-radius: 18px; padding: 25px; margin: 10px 0;
+  }
+
+  .flavour-item {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 12px 18px; background: white; border-radius: 12px;
+    border: 1px solid #f0f0f0; margin-bottom: 10px;
+  }
+
+  .payment-options {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 10px;
+  }
+  .payment-card {
+    border: 2px solid #f0f0f0; border-radius: 12px; padding: 15px;
+    text-align: center; cursor: pointer; transition: 0.3s; background: white;
+    font-weight: 700; color: #777;
+  }
+  .payment-card.active {
+    border-color: #ffb13b; background: #fffdf9; color: #ffb13b;
+  }
+  .payment-card input { display: none; }
+
+  .price { font-size: 26px; font-weight: 800; color: #ffb13b; text-align: center; margin: 20px 0; }
+  .confirm-btn {
+    background: #ffb13b; color: white; border: none; padding: 18px 50px;
+    border-radius: 15px; font-weight: 800; font-size: 18px; cursor: pointer; width: 100%;
+  }
+</style>
+
+<script src="https://cdn.jsdelivr.net/npm/emailjs-com@3/dist/email.min.js"></script>
+<script>
+(function(){ emailjs.init("gvPecLwC73y7pY9UV"); })();
+</script>
+</head>
+
+<body>
+
+<header class="nav">
+  <div class="logo">FRUTIQ</div>
+  <nav>
+    <a href="index.html">Home</a>
+    <a class="active">Shop</a>
+    <a href="about.html">About</a>
+    <a href="contact.html">Contact</a>
+  </nav>
+</header>
+
+<section class="shop">
+  <h1 class="shop-title">Choose Your Energy</h1>
+  <div class="products">
+    <div class="product">
+      <img src="images/can-mango.png" alt="Mango">
+      <h3>Mango Rush</h3> <p>$49</p>
+      <button onclick="openOrder('Mango')">Buy Now</button>
+    </div>
+    <div class="product">
+      <img src="images/can-apple.png" alt="Apple">
+      <h3>Apple Blast</h3> <p>$49</p>
+      <button onclick="openOrder('Apple')">Buy Now</button>
+    </div>
+    <div class="product">
+      <img src="images/can-strawberry.png" alt="Strawberry">
+      <h3>Strawberry Spark</h3> <p>$49</p>
+      <button onclick="openOrder('Strawberry')">Buy Now</button>
+    </div>
+  </div>
+</section>
+
+<div class="overlay" id="overlay" onclick="closeOrder()"></div>
+
+<div class="order-modal" id="orderModal">
+  <h2>Checkout Order</h2>
+
+  <form id="orderForm">
+    <div class="form-grid">
+      <input type="text" id="name" placeholder="Full Name" required>
+      <input type="email" id="email" placeholder="Email Address" required>
+      <div class="full-width"><input type="tel" id="phone" placeholder="Phone Number" required></div>
+      
+      <div class="section-box full-width">
+        <p style="margin-bottom: 15px; font-weight: 800;">Select Your Flavours</p>
+        <div class="flavour-item">
+          <label><input type="checkbox" class="f-check" data-flavour="Mango"> Mango Rush</label>
+          <div style="display:flex; align-items:center; gap:10px;">
+            <span style="font-size:12px; font-weight:800; color:#999;">QTY</span>
+            <input type="number" class="qty-input" data-flavour="Mango" min="1" value="1" disabled style="width:60px; text-align:center; border-radius:8px; border:1px solid #ddd;">
+          </div>
+        </div>
+        <div class="flavour-item">
+          <label><input type="checkbox" class="f-check" data-flavour="Apple"> Apple Blast</label>
+          <div style="display:flex; align-items:center; gap:10px;">
+            <span style="font-size:12px; font-weight:800; color:#999;">QTY</span>
+            <input type="number" class="qty-input" data-flavour="Apple" min="1" value="1" disabled style="width:60px; text-align:center; border-radius:8px; border:1px solid #ddd;">
+          </div>
+        </div>
+        <div class="flavour-item">
+          <label><input type="checkbox" class="f-check" data-flavour="Strawberry"> Strawberry Spark</label>
+          <div style="display:flex; align-items:center; gap:10px;">
+            <span style="font-size:12px; font-weight:800; color:#999;">QTY</span>
+            <input type="number" class="qty-input" data-flavour="Strawberry" min="1" value="1" disabled style="width:60px; text-align:center; border-radius:8px; border:1px solid #ddd;">
+          </div>
+        </div>
+      </div>
+
+      <div class="section-box full-width">
+        <p style="margin-bottom: 10px; font-weight: 800;">Payment Method</p>
+        <div class="payment-options">
+          <label class="payment-card active">
+            <input type="radio" name="payment_method" value="Cash on Delivery" checked onchange="updatePaymentUI()">
+            💵 Cash on Delivery
+          </label>
+          <label class="payment-card">
+            <input type="radio" name="payment_method" value="Online Payment" onchange="updatePaymentUI()">
+            💳 Online Payment
+          </label>
+        </div>
+      </div>
+
+      <div class="full-width"><textarea id="address" placeholder="Complete Delivery Address" rows="3" required></textarea></div>
+    </div>
+
+    <div class="price">Total: $<span id="total">0</span></div>
+    <button type="submit" class="confirm-btn" id="submit-btn">Place Order</button>
+  </form>
+</div>
+
+<script>
+const pricePerCan = 49;
+const totalDisplay = document.getElementById("total");
+const checkboxes = document.querySelectorAll('.f-check');
+const qtyInputs = document.querySelectorAll('.qty-input');
+const btn = document.getElementById("submit-btn");
+
+function updatePaymentUI() {
+  document.querySelectorAll('.payment-card').forEach(card => {
+    card.classList.toggle('active', card.querySelector('input').checked);
+  });
+}
+
+function updateTotal() {
+  let grandTotal = 0;
+  checkboxes.forEach(cb => {
+    const flavourName = cb.getAttribute('data-flavour');
+    const qtyInput = document.querySelector(`.qty-input[data-flavour="${flavourName}"]`);
+    if (cb.checked) {
+      qtyInput.disabled = false;
+      grandTotal += (parseInt(qtyInput.value) || 0) * pricePerCan;
+    } else {
+      qtyInput.disabled = true;
+    }
+  });
+  totalDisplay.innerText = grandTotal;
+}
+
+function openOrder(flavour) {
+  checkboxes.forEach(cb => cb.checked = false);
+  qtyInputs.forEach(input => { input.value = 1; input.disabled = true; });
+  const targetCheck = Array.from(checkboxes).find(cb => cb.getAttribute('data-flavour') === flavour);
+  if (targetCheck) targetCheck.checked = true;
+  document.getElementById("overlay").classList.add("show");
+  document.getElementById("orderModal").classList.add("show");
+  document.body.style.overflow = "hidden";
+  updateTotal();
+}
+
+function closeOrder() {
+  document.getElementById("overlay").classList.remove("show");
+  document.getElementById("orderModal").classList.remove("show");
+  document.body.style.overflow = "auto";
+}
+
+checkboxes.forEach(cb => cb.addEventListener('change', updateTotal));
+qtyInputs.forEach(input => input.addEventListener('input', updateTotal));
+
+document.getElementById("orderForm").addEventListener("submit", function(e) {
+  e.preventDefault();
+  btn.innerText = "Processing...";
+  
+  const customerName = document.getElementById("name").value;
+  const customerEmail = document.getElementById("email").value;
+  const phone = document.getElementById("phone").value;
+  const address = document.getElementById("address").value;
+  const paymentMethod = document.querySelector('input[name="payment_method"]:checked').value;
+  const total = totalDisplay.innerText;
+
+  let orderSummary = [];
+  checkboxes.forEach(cb => {
+    if (cb.checked) {
+      const flavourName = cb.getAttribute('data-flavour');
+      const qty = document.querySelector(`.qty-input[data-flavour="${flavourName}"]`).value;
+      orderSummary.push(`${flavourName} (${qty})`);
+    }
+  });
+  const flavourList = orderSummary.join(", ");
+
+  // --- HTML DESIGNS ---
+  const receiptHTML = `<div style="font-family:sans-serif;background:#fffdf9;padding:40px;"><div style="max-width:550px;margin:auto;background:#fff;border-radius:30px;padding:40px;border:1px solid #fff1dc;text-align:center;"><h1 style="color:#ffb13b;">Order Confirmed!</h1><p>High-five, <b>${customerName}</b>! We've received your order for <b>${flavourList}</b>.</p><div style="background:#fff8ee;padding:20px;border-radius:20px;margin:20px 0;"><p><b>Location:</b> ${address}</p><p><b>Total: $${total}</b></p><p style="color:#ffb13b;font-weight:bold;">✓ ${paymentMethod}</p></div><p style="color:#bbb;font-size:12px;">Our rider will call ${phone} soon.</p></div></div>`;
+
+  const ownerHTML = `<div style="font-family:sans-serif;background:#f4f4f4;padding:40px;"><div style="max-width:600px;margin:auto;background:#fff;border-radius:20px;overflow:hidden;"><div style="background:#2d3436;padding:20px;text-align:center;"><h1 style="color:#ffb13b;margin:0;font-size:20px;">NEW WORK ORDER</h1></div><div style="padding:40px;"><p><b>Items:</b> ${flavourList}</p><p><b>Customer:</b> ${customerName}</p><p><b>Phone:</b> ${phone}</p><p><b>Address:</b> ${address}</p><p><b>Payment:</b> ${paymentMethod}</p><div style="background:#ffb13b;color:#fff;padding:20px;text-align:center;border-radius:12px;"><h1>Total: $${total}</h1></div></div></div></div>`;
+
+const newsletterHTML = `
+<div style="margin:0;padding:0;background-color:#F4F1EE;font-family:'Quicksand',Arial,sans-serif;">
+  <table width="100%" border="0" cellspacing="0" cellpadding="0">
+    <tr>
+      <td align="center" style="padding:20px;">
+        <table width="600" border="0" cellspacing="0" cellpadding="0" style="background-color:#ffffff;box-shadow:0 15px 45px rgba(0,0,0,0.05);border-radius:4px;overflow:hidden;">
+          
+          <tr>
+            <td style="background-color:#4A3228;padding:12px 30px;text-align:center;">
+              <span style="color:#ffffff;font-size:11px;text-transform:uppercase;letter-spacing:2px;">Official FRUTIQ Community Update | Feb 2026</span>
+            </td>
+          </tr>
+
+          <tr>
+            <td style="padding:40px;background-color:#F9F7F5;">
+              <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                <tr>
+                  <td width="45%" valign="middle">
+                    <div style="background-color:#4A3228;padding:25px;border-radius:4px;">
+                      <h2 style="color:#ffb13b;margin:0;font-size:22px;font-weight:700;">Nature's Power</h2>
+                      <p style="color:#ffffff;font-size:13px;line-height:1.6;margin:15px 0;">Energy shouldn't be artificial. We source the finest fruits for a natural spark that lasts through your longest days.</p>
+                      <a href="#" style="display:inline-block;padding:8px 15px;background-color:#ffb13b;color:#4A3228;text-decoration:none;font-size:12px;font-weight:bold;border-radius:2px;">Shop Now</a>
+                    </div>
+                  </td>
+                  <td width="55%" align="right">
+                    <img src="https://images.unsplash.com/photo-1613478223719-2ab802602423?auto=format&fit=crop&w=350&q=80" width="280" style="display:block;border-radius:4px;" alt="Fresh Mango Juice">
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+
+          <tr>
+            <td style="padding:40px; text-align:center; border-bottom: 1px solid #eee;">
+              <h3 style="color:#4A3228; margin:0 0 20px 0; text-transform:uppercase; letter-spacing:1px;">The FRUTIQ Difference</h3>
+              <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                <tr>
+                  <td width="33%" style="padding:10px;">
+                    <span style="font-size:24px;">🌿</span><br>
+                    <b style="color:#4A3228; font-size:13px;">100% Vegan</b><br>
+                    <span style="color:#888; font-size:11px;">Plant-based power only.</span>
+                  </td>
+                  <td width="33%" style="padding:10px;">
+                    <span style="font-size:24px;">🚫</span><br>
+                    <b style="color:#4A3228; font-size:13px;">No Dairy</b><br>
+                    <span style="color:#888; font-size:11px;">Safe and clean energy.</span>
+                  </td>
+                  <td width="33%" style="padding:10px;">
+                    <span style="font-size:24px;">⚡</span><br>
+                    <b style="color:#4A3228; font-size:13px;">Real Fruit</b><br>
+                    <span style="color:#888; font-size:11px;">Zero artificial syrups.</span>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+
+          <tr>
+            <td style="padding:40px;">
+              <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                <tr>
+                  <td width="45%">
+                    <img src="https://images.unsplash.com/photo-1519996529931-28324d5a630e?auto=format&fit=crop&w=300&q=80" width="230" style="display:block;border-radius:20px;" alt="Tropical Fruit Selection">
+                  </td>
+                  <td width="55%" style="padding-left:30px;">
+                    <h3 style="color:#4A3228;margin:0;font-size:18px;">Special Reward</h3>
+                    <p style="color:#666;font-size:13px;margin:10px 0;">As a new member of the tribe, use code <b>FRESH15</b> for your next order.</p>
+                    <h3 style="color:#4A3228;margin:15px 0 5px 0;font-size:18px;">Refer a Friend</h3>
+                    <p style="color:#666;font-size:13px;margin:10px 0;">Share the spark! When a friend orders, you both get a free Mango Rush on us.</p>
+                    <p style="color:#4A3228;font-weight:bold;font-size:15px;margin-top:15px;">STAY FRESH. STAY FOCUSED.</p>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+
+          <tr>
+            <td style="padding:0 40px 40px 40px;">
+              <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                <tr>
+                  <td width="50%" valign="top" style="padding-right:20px;">
+                    <h3 style="color:#4A3228;margin:0;font-size:18px;text-transform:uppercase;">Weekly Spark</h3>
+                    <p style="color:#666;font-size:13px;line-height:1.6;">Try our Apple Blast—pure crispness derived from the heart of the valley. Perfect for early mornings or late-night focus sessions.</p>
+                    <a href="#" style="display:inline-block;padding:8px 15px;background-color:#4A3228;color:#ffffff;text-decoration:none;font-size:11px;border-radius:2px;">See All Flavors</a>
+                  </td>
+                  <td width="50%">
+                    <img src="https://images.unsplash.com/photo-1622597467836-f3285f2131b8?auto=format&fit=crop&w=300&q=80" width="250" style="display:block;border-radius:4px;" alt="Chilled Apple Blast">
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+
+          <tr>
+            <td style="background-color:#4A3228;padding:30px;text-align:center;">
+              <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                <tr>
+                  <td align="left" style="color:#ffffff;font-size:11px;width:33.3%;">
+                    <b>Visit Us</b><br>Fruit Valley, 2026
+                  </td>
+                  <td align="center" style="color:#ffffff;font-size:11px;width:33.3%;">
+                    <b>Contact</b><br>hello@frutiq.com
+                  </td>
+                  <td align="right" style="color:#ffffff;font-size:11px;width:33.3%;">
+                    <b>Website</b><br>FRUTIQ Energy
+                  </td>
+                </tr>
+              </table>
+              <div style="margin-top:20px; border-top: 1px solid rgba(255,255,255,0.1); padding-top:20px;">
+                <p style="color:rgba(255,255,255,0.5); font-size:10px; margin:0;">
+                  © 2026 FRUTIQ. All rights reserved. You received this because you are part of the Tribe.
+                </p>
+              </div>
+            </td>
+          </tr>
+
+        </table>
+      </td>
+    </tr>
+  </table>
+</div>
+`;
+  const serviceID = "service_naplmcd";
+  const masterTemplateID = "template_l1bzfbg"; // Replace with your Master Template ID
+
+  // 1. Send to Owner
+  emailjs.send(serviceID, masterTemplateID, {
+    subject_title: `🚨 NEW ORDER: ${customerName}`,
+    message_body: ownerHTML,
+    to_email: "frutiqofficial@gmail.com" // Set your business email
+  });
+
+  // 2. Send Receipt to Customer
+  setTimeout(() => {
+    emailjs.send(serviceID, masterTemplateID, {
+      subject_title: "Woohoo! Order Confirmed ⚡",
+      message_body: receiptHTML,
+      to_email: customerEmail
+    }).then(() => {
+      alert("✅ Order Placed Successfully!");
+      btn.innerText = "Place Order";
+      closeOrder();
+      document.getElementById("orderForm").reset();
+
+      // 3. Delayed Newsletter
+      setTimeout(() => {
+        emailjs.send(serviceID, masterTemplateID, {
+          subject_title: "Welcome to the Fam! ⚡ (Plus a gift)",
+          message_body: newsletterHTML,
+          to_email: customerEmail
+        });
+      }, 30000);
+    });
+  }, 500);
+});
+</script>
+
+</body>
+</html>

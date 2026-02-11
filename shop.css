@@ -1,0 +1,211 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: "Segoe UI", sans-serif;
+}
+
+body {
+  background-image:url("images/bg-mango.jpg");
+  background-size: cover;
+  color: #fff;
+  overflow:hidden;
+}
+a {
+  text-decoration: none;   /* remove underline */
+  color: inherit;          /* use parent text color */
+}
+
+
+/* NAV */
+.nav a {
+  color: #fff;
+  opacity: 0.85;
+  transition: opacity 0.3s ease;
+  font-weight: 600;
+}
+
+.nav a:hover {
+  opacity: 1;
+}
+
+.nav {
+  position: fixed;
+  top: 0;
+  width: 100%;
+  padding: 20px 60px;
+  display: flex;
+  justify-content: space-between;
+  z-index: 20;
+}
+
+.nav a {
+  margin-left: 25px;
+  cursor: pointer;
+}
+
+
+.logo {
+  font-family: "Quicksand", sans-serif;
+  font-size: 36px;
+  font-weight: 700;
+}
+
+/* SHOP */
+.shop {
+  padding: 140px 80px;
+  text-align: center;
+}
+
+.shop-title {
+  font-size: 48px;
+  margin-bottom: 50px;
+  color: #fff;
+}
+
+/* PRODUCTS */
+.products {
+  display: flex;
+  gap: 40px;
+  justify-content: center;
+}
+
+.product {
+  background: #fff;
+  padding: 30px;
+  border-radius: 20px;
+  width: 240px;
+  box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+  transition: transform 0.3s;
+}
+
+.product:hover {
+  transform: translateY(-10px);
+}
+
+.product img {
+  width: 120px;
+  margin-bottom: 20px;
+}
+
+.product h3 {
+  font-size: 20px;
+  color: #111;
+}
+
+.product p {
+  font-size: 18px;
+  margin: 10px 0;
+  color: #111;
+}
+
+.product button {
+  background: #ff6a00;
+  border: none;
+  color: #fff;
+  padding: 12px 26px;
+  border-radius: 30px;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+/* MODAL */
+.overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.45);
+  opacity: 0;
+  pointer-events: none;
+}
+
+.overlay.show {
+  opacity: 1;
+  pointer-events: all;
+}
+
+.order-modal {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) scale(0.9);
+  background: #fff;
+  padding: 30px;
+  border-radius: 20px;
+  width: 320px;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.order-modal.show {
+  opacity: 1;
+  transform: translate(-50%, -50%) scale(1);
+  pointer-events: all;
+}
+
+.order-modal h2 {
+  margin-bottom: 15px;
+}
+
+.order-modal input,
+.order-modal textarea,
+.order-modal select {
+  width: 100%;
+  margin-bottom: 12px;
+  padding: 10px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+}
+
+.order-modal textarea {
+  resize: none;
+  height: 70px;
+  color:#111;
+  
+}
+
+.price {
+  font-weight: bold;
+  margin: 10px 0;
+}
+
+.confirm {
+  background: #28a745;
+  color: white;
+  border: none;
+  width: 100%;
+  padding: 12px;
+  border-radius: 30px;
+  margin-top: 10px;
+  cursor: pointer;
+}
+
+.close {
+  background: transparent;
+  border: none;
+  color: #555;
+  margin-top: 10px;
+  width: 100%;
+  cursor: pointer;
+}
+.flavour-selection p {
+  color: #333; /* Dark gray for the "Select Flavours:" heading */
+  font-family: 'Quicksand', sans-serif;
+  font-size: 16px;
+  margin-bottom: 8px;
+}
+
+.flavour-selection label {
+  color: #555; /* Medium gray for the actual flavor names */
+  font-family: 'Quicksand', sans-serif;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  width: 100%;
+  padding: 5px 0;
+  cursor: pointer;
+}
+
+/* Ensure the text is visible even if the user has a dark browser theme */
+.order-modal {
+  color: #000 !important; 
+}
