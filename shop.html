@@ -77,6 +77,13 @@
     <a class="active">Shop</a>
     <a href="about.html">About</a>
     <a href="contact.html">Contact</a>
+        <!-- 👤 PROFILE ICON -->
+    <a href="profile.html" class="profile-icon" title="Profile">
+      <svg width="18" height="18" fill="white" viewBox="0 0 24 24">
+        <path d="M12 12c2.7 0 5-2.3 5-5s-2.3-5-5-5-5 2.3-5 5 2.3 5 5 5zm0 2c-3.3 0-10 1.7-10 5v3h20v-3c0-3.3-6.7-5-10-5z"/>
+      </svg>
+    </a>
+
   </nav>
 </header>
 
@@ -108,37 +115,54 @@
 
   <form id="orderForm">
     <div class="form-grid">
-      <input type="text" id="name" placeholder="Full Name" required>
-      <input type="email" id="email" placeholder="Email Address" required>
-      <div class="full-width"><input type="tel" id="phone" placeholder="Phone Number" required></div>
-      
+
+      <!-- AUTO-FILLED USER DETAILS -->
+      <input type="text" id="name" placeholder="Full Name" readonly>
+      <input type="email" id="email" placeholder="Email Address" readonly>
+      <div class="full-width">
+        <input type="tel" id="phone" placeholder="Phone Number" readonly>
+      </div>
+
+      <!-- ADDRESS SELECT -->
+      <div class="section-box full-width">
+        <p style="margin-bottom:12px;font-weight:800;">Delivery Address</p>
+        <select id="address" required>
+          <option value="">Select saved address</option>
+        </select>
+      </div>
+
+      <!-- FLAVOURS -->
       <div class="section-box full-width">
         <p style="margin-bottom: 15px; font-weight: 800;">Select Your Flavours</p>
+
         <div class="flavour-item">
           <label><input type="checkbox" class="f-check" data-flavour="Mango"> Mango Rush</label>
-          <div style="display:flex; align-items:center; gap:10px;">
-            <span style="font-size:12px; font-weight:800; color:#999;">QTY</span>
-            <input type="number" class="qty-input" data-flavour="Mango" min="1" value="1" disabled style="width:60px; text-align:center; border-radius:8px; border:1px solid #ddd;">
+          <div style="display:flex;align-items:center;gap:10px;">
+            <span style="font-size:12px;font-weight:800;color:#999;">QTY</span>
+            <input type="number" class="qty-input" data-flavour="Mango" min="1" value="1" disabled>
           </div>
         </div>
+
         <div class="flavour-item">
           <label><input type="checkbox" class="f-check" data-flavour="Apple"> Apple Blast</label>
-          <div style="display:flex; align-items:center; gap:10px;">
-            <span style="font-size:12px; font-weight:800; color:#999;">QTY</span>
-            <input type="number" class="qty-input" data-flavour="Apple" min="1" value="1" disabled style="width:60px; text-align:center; border-radius:8px; border:1px solid #ddd;">
+          <div style="display:flex;align-items:center;gap:10px;">
+            <span style="font-size:12px;font-weight:800;color:#999;">QTY</span>
+            <input type="number" class="qty-input" data-flavour="Apple" min="1" value="1" disabled>
           </div>
         </div>
+
         <div class="flavour-item">
           <label><input type="checkbox" class="f-check" data-flavour="Strawberry"> Strawberry Spark</label>
-          <div style="display:flex; align-items:center; gap:10px;">
-            <span style="font-size:12px; font-weight:800; color:#999;">QTY</span>
-            <input type="number" class="qty-input" data-flavour="Strawberry" min="1" value="1" disabled style="width:60px; text-align:center; border-radius:8px; border:1px solid #ddd;">
+          <div style="display:flex;align-items:center;gap:10px;">
+            <span style="font-size:12px;font-weight:800;color:#999;">QTY</span>
+            <input type="number" class="qty-input" data-flavour="Strawberry" min="1" value="1" disabled>
           </div>
         </div>
       </div>
 
+      <!-- PAYMENT -->
       <div class="section-box full-width">
-        <p style="margin-bottom: 10px; font-weight: 800;">Payment Method</p>
+        <p style="margin-bottom:10px;font-weight:800;">Payment Method</p>
         <div class="payment-options">
           <label class="payment-card active">
             <input type="radio" name="payment_method" value="Cash on Delivery" checked onchange="updatePaymentUI()">
@@ -151,7 +175,6 @@
         </div>
       </div>
 
-      <div class="full-width"><textarea id="address" placeholder="Complete Delivery Address" rows="3" required></textarea></div>
     </div>
 
     <div class="price">Total: $<span id="total">0</span></div>
@@ -159,7 +182,36 @@
   </form>
 </div>
 
+
 <script>
+function loadUserData(){
+  const user = JSON.parse(localStorage.getItem("frutiqUser")) || {};
+  const addresses = JSON.parse(localStorage.getItem("frutiqAddresses")) || [];
+
+  document.getElementById("name").value = user.name || "";
+  document.getElementById("email").value = user.email || "";
+  document.getElementById("phone").value = addresses.find(a=>a.default)?.phone || "";
+
+  const addressSelect = document.getElementById("address");
+  addressSelect.innerHTML = '<option value="">Select saved address</option>';
+
+  addresses.forEach(a=>{
+    const fullAddress =
+      `${a.name}, ${a.house}, ${a.street}, ${a.city}, ${a.state} - ${a.pincode} | 📞 ${a.phone}`;
+    const opt = document.createElement("option");
+    opt.value = fullAddress;
+    opt.textContent = fullAddress;
+    if(a.default) opt.selected = true;
+    addressSelect.appendChild(opt);
+  });
+}
+
+/* CALL WHEN MODAL OPENS */
+const oldOpenOrder = openOrder;
+openOrder = function(flavour){
+  oldOpenOrder(flavour);
+  loadUserData();
+};
 const pricePerCan = 49;
 const totalDisplay = document.getElementById("total");
 const checkboxes = document.querySelectorAll('.f-check');

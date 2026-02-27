@@ -7,65 +7,195 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@600;700;800&display=swap" rel="stylesheet">
-  <meta charset="UTF-8">
+
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="icon" href="favicon.ico" type="image/x-icon">
-  
+  <link rel="icon" href="favicon.ico">
 
-
-<title>Fruitiq – Fresh Fruit Energy Drink</title>
-
-<meta name="description" content="Frutiq is a refreshing fruit-based energy drink. Experience tropical flavors like Mango Rush with instant energy and natural freshness.">
-
-<meta name="keywords" content="Frutiq, fruit energy drink, mango energy drink, healthy energy drink, tropical fruit drink">
-
-<meta name="author" content="Frutiq">
-
-
+  <!-- HOME PAGE CSS (DO NOT TOUCH) -->
   <link rel="stylesheet" href="style.css">
-  <script type="application/ld+json">
-   {
-     "@context": "https://schema.org",
-     "@type": "Organization",
-     "name": "FRUTIQ",
-     "url": "https://frutiqofficial-fq.vercel.app/",
-     "logo": "https://frutiqofficial-fq.vercel.app/logo.png"
-  }
- </script>
 
+  <!-- 🔐 LOGIN / REGISTER STYLE ONLY -->
+  <style>
+    .auth-container{
+      min-height:100vh;
+      background-image:url("images/bg-mango.jpg");
+      background-size:cover;
+      background-position:center;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      position:relative;
+      color:#fff;
+    }
+
+    .auth-brand{
+      position:absolute;
+      top:30px;
+      left:60px;
+      font-size:36px;
+      font-family:"Quicksand",sans-serif;
+      font-weight:700;
+      letter-spacing:3px;
+      z-index:10;
+    }
+
+    .auth-box{
+      width:480px;
+      padding:45px;
+      background:rgba(255,255,255,0.08);   /* SAME AS YOUR CARDS */
+      backdrop-filter:blur(12px);
+      border-radius:22px;
+      text-align:center;
+    }
+
+    .auth-box h2{
+      font-size:32px;
+      margin-bottom:25px;
+      font-family:"Quicksand",sans-serif;
+    }
+
+    .auth-box input{
+      width:100%;
+      padding:14px;
+      margin:14px 0;
+      border-radius:12px;
+      border:none;
+      font-size:16px;
+      outline:none;
+    }
+
+    .auth-box button{
+      width:100%;
+      padding:14px;
+      margin-top:10px;
+      border:none;
+      border-radius:30px;
+      background:#ffffff;
+      color:#000;
+      font-weight:bold;
+      cursor:pointer;
+      transition:transform 0.25s ease, box-shadow 0.25s ease;
+    }
+
+    .auth-box button:hover{
+      transform:translateY(-3px);
+      box-shadow:0 12px 25px rgba(0,0,0,0.35);
+    }
+
+    .auth-link{
+      font-weight:600;
+      cursor:pointer;
+      opacity:0.9;
+    }
+
+    .auth-link:hover{
+      opacity:1;
+    }
+.nav a.profile-icon{
+  display: inline-flex;          /* keeps SVG centered */
+  align-items: center;
+  justify-content: center;
+
+  width: 34px;
+  height: 34px;
+  margin-left: 20px;
+
+  border-radius: 50%;
+  border: 2px solid rgba(255,255,255,0.9);
+
+  /* IMPORTANT */
+  transform: translateY(0);
+
+  transition:
+    transform 0.25s ease,
+    border-color 0.25s ease,
+    background-color 0.25s ease;
+}
+.nav a.profile-icon:hover{
+  transform: translateY(-2px);   /* smaller than text */
+  border-color: #ffb13b;
+  background-color: rgba(255,255,255,0.08);
+}
+  </style>
 </head>
+
 <body>
+
+<!-- 🔐 LOGIN -->
+<div id="loginSection" class="auth-container">
+  <div class="auth-brand">FRUTIQ</div>
+
+  <div class="auth-box">
+    <h2>Login</h2>
+
+    <input type="email" id="loginEmail" placeholder="Email">
+    <input type="password" id="loginPassword" placeholder="Password">
+
+    <button onclick="login()">Login</button>
+
+    <p style="margin-top:18px;">
+      New user?
+      <span class="auth-link" onclick="showRegister()">Register</span>
+    </p>
+
+    <p id="loginMsg"></p>
+  </div>
+</div>
+
+<!-- 📝 REGISTER -->
+<div id="registerSection" class="auth-container" style="display:none;">
+  <div class="auth-brand">FRUTIQ</div>
+
+  <div class="auth-box">
+    <h2>Create Account</h2>
+
+    <input type="text" id="regName" placeholder="Name">
+    <input type="email" id="regEmail" placeholder="Email">
+    <input type="password" id="regPassword" placeholder="Password">
+
+    <button onclick="register()">Register</button>
+
+    <p style="margin-top:18px;">
+      Already have an account?
+      <span class="auth-link" onclick="showLogin()">Login</span>
+    </p>
+
+    <p id="registerMsg"></p>
+  </div>
+</div>
+
+<!-- 🏠 HOME (UNCHANGED) -->
+<div id="homeSection" style="display:none;">
 
 <header class="nav">
   <div class="logo">FRUTIQ</div>
   <nav>
-    <a href="index.html">Home</a>
+    <a href="#">Home</a>
     <a href="shop.html">Shop</a>
     <a href="about.html">About</a>
     <a href="contact.html">Contact</a>
-  </nav>
 
+<a href="profile.html" class="profile-icon">
+  <svg width="18" height="18" fill="white" viewBox="0 0 24 24">
+    <path d="M12 12c2.7 0 5-2.3 5-5s-2.3-5-5-5-5 2.3-5 5 2.3 5 5 5zm0 2c-3.3 0-10 1.7-10 5v3h20v-3c0-3.3-6.7-5-10-5z"/>
+  </svg>
+</a>
+  </nav>
 </header>
 
 <section class="hero">
-
-  <!-- Background -->
   <div class="bg" id="bg"></div>
   <div class="overlay" id="overlay"></div>
 
-  <!-- Big text -->
   <h1 class="bg-text animate-text" id="bgText">MANGO</h1>
 
-  <!-- Slices -->
-  <img id="sliceLeft"  class="fruit f-left animate-slice"  src="images/mango-1.png">
-  <img id="sliceTop"   class="fruit f-top animate-slice"   src="images/mango-2.png">
+  <img id="sliceLeft" class="fruit f-left animate-slice" src="images/mango-1.png">
+  <img id="sliceTop" class="fruit f-top animate-slice" src="images/mango-2.png">
   <img id="sliceRight" class="fruit f-right animate-slice" src="images/mango-3.png">
 
-  <!-- Can -->
   <img id="mainCan" class="can animate-can" src="images/can-mango.png">
 
-  <!-- Content -->
-  <div class="content">
+   <div class="content">
     <h2 id="title">Mango Rush</h2>
     <p id="desc" style="margin-bottom: 14px;">
       Tropical power. Instant energy.
@@ -76,9 +206,7 @@
   </div>
   <div class="price-text">$49</div>
 
-
-  <!-- Slider -->
-  <div class="flavour-slider">
+    <div class="flavour-slider">
     <button class="arrow" onclick="prevFlavour()">&#10094;</button>
 
     <div class="flavour-items">
@@ -92,99 +220,88 @@
 
 </section>
 
+</div>
+
+<!-- 🔐 AUTH LOGIC -->
 <script>
-const flavours = {
-  mango: {
-    bg: "images/bg-mango.jpg",
-    text: "MANGO",
-    title: "Mango Rush",
-    desc: "Tropical power. Instant energy.",
-    can: "images/can-mango.png",
-    slices: ["images/mango-1.png","images/mango-2.png","images/mango-3.png"],
-    overlay: "rgba(255,180,60,0.55)"
-  },
-  apple: {
-    bg: "images/bg-apple.jpg",
-    text: "APPLE",
-    title: "Apple Blast",
-    desc: "Crisp energy. Fresh punch.",
-    can: "images/can-apple.png",
-    slices: ["images/apple-1.png","images/apple-2.png","images/apple-3.png"],
-    overlay: "rgba(255,80,80,0.3)"
-  },
-  strawberry: {
-    bg: "images/bg-strawberry.jpg",
-    text: "BERRY",
-    title: "Strawberry Spark",
-    desc: "Berry bold. Charged taste.",
-    can: "images/can-strawberry.png",
-    slices: ["images/strawberry-1.png","images/strawberry-2.png","images/strawberry-3.png"],
-    overlay: "rgba(255,100,160,0.35)"
+  function showRegister(){
+    loginSection.style.display = "none";
+    registerSection.style.display = "flex";
   }
-};
 
-const order = ["mango","apple","strawberry"];
-let index = 0;
+  function showLogin(){
+    registerSection.style.display = "none";
+    loginSection.style.display = "flex";
+  }
 
-function restart(el, cls) {
-  el.classList.remove(cls);
-  void el.offsetWidth;
-  el.classList.add(cls);
-}
+  function register(){
+    localStorage.setItem("frutiqUser", JSON.stringify({
+      name: regName.value,
+      email: regEmail.value,
+      password: regPassword.value
+    }));
+    registerMsg.innerText = "Account created ✅";
+    showLogin();
+  }
 
-function setFlavour(name) {
-  index = order.indexOf(name);
-  const f = flavours[name];
+  function login(){
+    const user = JSON.parse(localStorage.getItem("frutiqUser"));
 
-  const bgText = document.getElementById("bgText");
-  const can = document.getElementById("mainCan");
-  const l = document.getElementById("sliceLeft");
-  const t = document.getElementById("sliceTop");
-  const r = document.getElementById("sliceRight");
+    if(user && loginEmail.value === user.email && loginPassword.value === user.password){
+      // ✅ CREATE SESSION
+      localStorage.setItem("frutiqSession", "active");
 
-  document.getElementById("bg").style.backgroundImage = `url('${f.bg}')`;
-  document.getElementById("overlay").style.background =
-    `radial-gradient(circle at center, ${f.overlay}, transparent 70%)`;
+      loginSection.style.display = "none";
+      registerSection.style.display = "none";
+      homeSection.style.display = "block";
+    }else{
+      loginMsg.innerText = "Invalid credentials ❌";
+    }
+  }
 
-  bgText.innerText = f.text;
-  document.getElementById("title").innerText = f.title;
-  document.getElementById("desc").innerText = f.desc;
+  // ✅ SESSION CHECK ON PAGE LOAD
+  window.addEventListener("load", () => {
+    if(localStorage.getItem("frutiqSession") === "active"){
+      loginSection.style.display = "none";
+      registerSection.style.display = "none";
+      homeSection.style.display = "block";
+    }
+  });
+</script>
 
-  can.src = f.can;
-  l.src = f.slices[0];
-  t.src = f.slices[1];
-  r.src = f.slices[2];
+<!-- 🍹 FLAVOUR SCRIPT (UNCHANGED) -->
+<script>
+  const flavours={
+    mango:{bg:"images/bg-mango.jpg",text:"MANGO",title:"Mango Rush",desc:"Tropical power. Instant energy.",can:"images/can-mango.png",slices:["images/mango-1.png","images/mango-2.png","images/mango-3.png"],overlay:"rgba(255,180,60,0.55)"},
+    apple:{bg:"images/bg-apple.jpg",text:"APPLE",title:"Apple Blast",desc:"Crisp energy. Fresh punch.",can:"images/can-apple.png",slices:["images/apple-1.png","images/apple-2.png","images/apple-3.png"],overlay:"rgba(255,80,80,0.3)"},
+    strawberry:{bg:"images/bg-strawberry.jpg",text:"BERRY",title:"Strawberry Spark",desc:"Berry bold. Charged taste.",can:"images/can-strawberry.png",slices:["images/strawberry-1.png","images/strawberry-2.png","images/strawberry-3.png"],overlay:"rgba(255,100,160,0.35)"}
+  };
 
-  restart(bgText,"animate-text");
-  restart(can,"animate-can");
-  restart(l,"animate-slice");
-  restart(t,"animate-slice");
-  restart(r,"animate-slice");
-}
+  const order=["mango","apple","strawberry"];
+  let index=0;
 
-function nextFlavour() {
-  index = (index + 1) % order.length;
-  setFlavour(order[index]);
-}
+  function restart(e,c){e.classList.remove(c);void e.offsetWidth;e.classList.add(c);}
+  function setFlavour(n){
+    index=order.indexOf(n);
+    const f=flavours[n];
+    bg.style.backgroundImage=`url('${f.bg}')`;
+    overlay.style.background=`radial-gradient(circle at center, ${f.overlay}, transparent 70%)`;
+    bgText.innerText=f.text;
+    title.innerText=f.title;
+    desc.innerText=f.desc;
+    mainCan.src=f.can;
+    sliceLeft.src=f.slices[0];
+    sliceTop.src=f.slices[1];
+    sliceRight.src=f.slices[2];
+    restart(bgText,"animate-text");
+    restart(mainCan,"animate-can");
+  }
 
-function prevFlavour() {
-  index = (index - 1 + order.length) % order.length;
-  setFlavour(order[index]);
-}
-// 🔁 AUTO SLIDE EVERY 5 SECONDS (NO MANUAL CHANGE)
-setInterval(() => {
-  nextFlavour();
-}, 7000);
-
-window.onload = () => setFlavour("mango");
+  function nextFlavour(){index=(index+1)%order.length;setFlavour(order[index]);}
+  function prevFlavour(){index=(index-1+order.length)%order.length;setFlavour(order[index]);}
+  setInterval(nextFlavour,7000);
+  window.onload=()=>setFlavour("mango");
 </script>
 
 </body>
 </html>
-
-
-
-
-
-
-

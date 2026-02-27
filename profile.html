@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Profile – FRUTIQ</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<!-- SAME CSS AS HOME -->
+<link rel="stylesheet" href="style.css">
+<link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@600;700;800&display=swap" rel="stylesheet">
+
+<style>
+.profile-page{
+  min-height:100vh;
+  background:url("images/bg-mango.jpg") center/cover no-repeat;
+  padding:120px 60px;
+  display:flex;
+  gap:40px;
+  color:#fff;
+}
+.profile-sidebar{
+  width:260px;
+  background:rgba(255,255,255,0.08);
+  backdrop-filter: blur(12px);
+  border-radius:24px;
+  padding:30px;
+}
+.avatar{
+  width:90px;height:90px;border-radius:50%;
+  background:#ffb13b;display:flex;align-items:center;justify-content:center;
+  font-size:34px;font-weight:800;margin-bottom:15px;color:#000;
+}
+.user-name{font-size:20px;font-weight:700;}
+.user-email{font-size:13px;opacity:0.8;margin-bottom:30px;}
+.menu button{
+  width:100%;background:none;border:none;color:#fff;text-align:left;
+  padding:14px;border-radius:12px;font-weight:600;cursor:pointer;
+  margin-bottom:6px;
+}
+.menu button.active,.menu button:hover{
+  background:rgba(255,255,255,0.15);
+}
+.profile-content{
+  flex:1;background:rgba(255,255,255,0.08);
+  backdrop-filter: blur(12px);border-radius:24px;padding:40px;
+}
+.section{display:none;}
+.section.active{display:block;}
+.section h2{font-size:28px;margin-bottom:20px;}
+.address-card{
+  background:rgba(255,255,255,0.12);
+  padding:20px;border-radius:18px;margin-bottom:15px;
+}
+.address-meta{font-size:14px;opacity:0.85;margin-top:6px;}
+.address-actions{margin-top:12px;display:flex;gap:10px;}
+.address-actions button{
+  padding:8px 14px;border-radius:20px;border:none;cursor:pointer;font-weight:600;
+}
+.default-badge{
+  background:#ffb13b;color:#000;padding:4px 10px;border-radius:12px;
+  font-size:12px;margin-left:10px;
+}
+input,select{
+  width:100%;padding:14px;border-radius:12px;border:none;margin:8px 0;font-size:15px;
+}
+.save-btn{
+  margin-top:15px;padding:14px 30px;border-radius:30px;border:none;
+  background:#fff;color:#000;font-weight:bold;cursor:pointer;
+}
+.logout-btn{background:#ff4d4d;color:#fff;}
+</style>
+</head>
+
+<body>
+
+<script>
+if(localStorage.getItem("frutiqSession")!=="active"){
+  window.location.href="index.html";
+}
+</script>
+
+<header class="nav">
+  <div class="logo">FRUTIQ</div>
+</header>
+
+<div class="profile-page">
+
+  <div class="profile-sidebar">
+    <div class="avatar" id="avatar"></div>
+    <div class="user-name" id="userName"></div>
+    <div class="user-email" id="userEmail"></div>
+
+    <div class="menu">
+      <button class="active" onclick="showSection('profile',this)">👤 Profile</button>
+      <button onclick="showSection('address',this)">📍 Address</button>
+      <button onclick="showSection('orders',this)">🧾 Orders</button>
+      <button onclick="showSection('settings',this)">⚙️ Settings</button>
+      <button onclick="goHome()">⬅ Back to Home</button>
+    </div>
+  </div>
+
+  <div class="profile-content">
+
+    <div class="section active" id="profile">
+      <h2>Profile Info</h2>
+      <p><b>Name:</b> <span id="pName"></span></p>
+      <p><b>Email:</b> <span id="pEmail"></span></p>
+    </div>
+
+    <div class="section" id="address">
+      <h2>Saved Addresses</h2>
+      <div id="addressList"></div>
+      <button class="save-btn" onclick="openAddressForm()">➕ Add Address</button>
+
+      <div id="addressForm" style="display:none;margin-top:20px;">
+        <input id="aName" placeholder="Full Name" required>
+        <input id="aPhone" placeholder="Phone Number" type="tel" required>
+        <input id="aHouse" placeholder="House / Flat" required>
+        <input id="aStreet" placeholder="Street / Area" required>
+        <div style="display:flex;gap:10px;">
+          <input id="aCity" placeholder="City" required>
+          <input id="aState" placeholder="State" required>
+        </div>
+        <input id="aPincode" placeholder="Pincode" required>
+        <select id="aType">
+          <option value="Home">🏠 Home</option>
+          <option value="Work">🏢 Work</option>
+        </select>
+        <button class="save-btn" onclick="saveAddress()">Save</button>
+        <button class="save-btn logout-btn" onclick="closeAddressForm()">Cancel</button>
+      </div>
+    </div>
+
+    <div class="section" id="orders">
+      <h2>Order History</h2>
+      <div id="orderList">No orders yet.</div>
+    </div>
+
+    <div class="section" id="settings">
+      <h2>Account Settings</h2>
+      <button class="save-btn logout-btn" onclick="logout()">Logout</button>
+    </div>
+
+  </div>
+</div>
+
+<script>
+const user = JSON.parse(localStorage.getItem("frutiqUser")) || {};
+userName.innerText = user.name || "User";
+userEmail.innerText = user.email || "";
+pName.innerText = user.name || "";
+pEmail.innerText = user.email || "";
+avatar.innerText = user.name ? user.name.split(" ").map(w=>w[0]).join("").toUpperCase() : "U";
+
+let addresses = JSON.parse(localStorage.getItem("frutiqAddresses")) || [];
+
+function renderAddresses(){
+  const list=document.getElementById("addressList");
+  if(!addresses.length){
+    list.innerHTML="<p>No saved addresses.</p>";
+    return;
+  }
+  list.innerHTML=addresses.map((a,i)=>`
+    <div class="address-card">
+      <b>${a.name} (${a.type}) ${a.default?'<span class="default-badge">Default</span>':''}</b>
+      <div class="address-meta">
+        ${a.house}, ${a.street}<br>
+        ${a.city}, ${a.state} - ${a.pincode}<br>
+        📞 ${a.phone}
+      </div>
+      <div class="address-actions">
+        <button onclick="setDefault(${i})">Set Default</button>
+        <button onclick="deleteAddress(${i})">Delete</button>
+      </div>
+    </div>
+  `).join("");
+}
+
+function openAddressForm(){ addressForm.style.display="block"; }
+function closeAddressForm(){ addressForm.style.display="none"; }
+
+function saveAddress(){
+  if(!aName.value || !aPhone.value || aPhone.value.length<10){
+    alert("Enter valid phone number ❌"); return;
+  }
+  addresses.push({
+    name:aName.value,
+    phone:aPhone.value,
+    email:user.email||"",
+    house:aHouse.value,
+    street:aStreet.value,
+    city:aCity.value,
+    state:aState.value,
+    pincode:aPincode.value,
+    type:aType.value,
+    default:addresses.length===0
+  });
+  localStorage.setItem("frutiqAddresses",JSON.stringify(addresses));
+  closeAddressForm();
+  renderAddresses();
+}
+
+function setDefault(i){
+  addresses.forEach(a=>a.default=false);
+  addresses[i].default=true;
+  localStorage.setItem("frutiqAddresses",JSON.stringify(addresses));
+  renderAddresses();
+}
+function deleteAddress(i){
+  addresses.splice(i,1);
+  localStorage.setItem("frutiqAddresses",JSON.stringify(addresses));
+  renderAddresses();
+}
+renderAddresses();
+
+function showSection(id,btn){
+  document.querySelectorAll(".section").forEach(s=>s.classList.remove("active"));
+  document.querySelectorAll(".menu button").forEach(b=>b.classList.remove("active"));
+  document.getElementById(id).classList.add("active");
+  btn.classList.add("active");
+}
+function goHome(){ window.location.href="index.html"; }
+function logout(){
+  localStorage.removeItem("frutiqSession");
+  window.location.href="index.html";
+}
+</script>
+
+</body>
+</html>
