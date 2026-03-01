@@ -10,6 +10,10 @@
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="icon" href="favicon.ico">
+  <script src="https://cdn.jsdelivr.net/npm/emailjs-com@3/dist/email.min.js"></script>
+<script>
+(function(){ emailjs.init("gvPecLwC73y7pY9UV"); })();
+</script>
 
   <!-- HOME PAGE CSS (DO NOT TOUCH) -->
   <link rel="stylesheet" href="style.css">
@@ -432,21 +436,52 @@ window.onload = () => setFlavour("mango");
     // 🚩 1. Tell the listener to IGNORE the next auth change
     window.isRegistering = true;
 
-    const cred = await createUserWithEmailAndPassword(auth, regEmail.value, regPassword.value);
-    
+    const name = regName.value;
+    const email = regEmail.value;
+    const password = regPassword.value;
+
+    // Create user
+    const cred = await createUserWithEmailAndPassword(auth, email, password);
+
+    // Save user in Firestore
     await setDoc(doc(db, "users", cred.user.uid), {
-      name: regName.value,
-      email: regEmail.value,
+      name: name,
+      email: email,
       createdAt: serverTimestamp()
+    });
+
+    // ✅ SEND WELCOME EMAIL (EmailJS)
+    emailjs.send(
+      "service_naplmcd",      // your service ID
+      "template_l1bzfbg",     // your template ID
+      {
+        to_email: email,
+        user_name: name,
+        message_body: `
+Hi ${name},
+
+Welcome to FRUTIQ 🍎⚡
+Your account has been successfully created.
+
+Start exploring fresh energy blends made from real fruits!
+
+Stay Fresh,
+Team FRUTIQ
+        `
+      }
+    ).then(() => {
+      console.log("Welcome email sent successfully");
+    }).catch((err) => {
+      console.error("EmailJS error:", err);
     });
 
     // 2. Clear session immediately
     await signOut(auth);
 
-    // 🚩 3. Now that they are signed out, we can turn the flag off
+    // 🚩 3. Turn flag OFF
     window.isRegistering = false;
 
-    // Clear fields
+    // Clear form
     regName.value = "";
     regEmail.value = "";
     regPassword.value = "";
@@ -455,12 +490,11 @@ window.onload = () => setFlavour("mango");
     showLogin();
 
   } catch (e) {
-    window.isRegistering = false; // Reset flag if it fails
+    window.isRegistering = false;
     registerMsg.innerText = e.message;
     registerMsg.style.color = "#ff5050";
   }
 };
-
   /* 🔑 LOGIN */
   window.login = async () => {
     try {
