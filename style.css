@@ -307,5 +307,103 @@ a {
 .contact-form textarea {
   height: 120px;
 }
+/* =========================
+    📱 MOBILE OPTIMIZATION
+========================= */
+
+@media (max-width: 768px) {
+  /* Fix Body Scrolling */
+  body {
+    overflow-y: auto; /* Allow scrolling on long mobile pages */
+  }
+
+  /* NAV: Stack or simplify navigation */
+  .nav {
+    padding: 15px 20px;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    background: rgba(0,0,0,0.2);
+    backdrop-filter: blur(5px);
+  }
+
+  .logo {
+    font-size: 28px;
+  }
+
+  .nav nav {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+  }
+
+  .nav a {
+    margin: 0 10px;
+    font-size: 14px;
+  }
+
+  /* HERO: Scale down big elements */
+  .bg-text {
+    font-size: 28vw; /* Slightly larger relative to screen */
+    letter-spacing: 5px;
+    top: 35%; 
+  }
+
+  .can {
+    width: 240px; /* Half the desktop size */
+    top: 45%;
+  }
+
+  /* FRUITS: Shrink or Hide them to clean up the screen */
+  .f-left { width: 120px; top: 15%; left: 5%; }
+  .f-top  { width: 80px; right: 5%; top: 10%; }
+  .f-right { width: 150px; bottom: 15%; right: 2%; top: auto; }
+
+  /* CONTENT: Center it for thumbs */
+  .content {
+    left: 0;
+    width: 100%;
+    text-align: center;
+    bottom: 18%; /* Move up above slider */
+  }
+
+  .content h2 {
+    font-size: 32px;
+  }
+
+  /* SLIDER: Make it easier to tap */
+  .flavour-slider {
+    bottom: 20px;
+    width: 90%;
+    justify-content: space-around;
+  }
+
+  /* SHOP & PROFILE PAGES */
+  .page {
+    padding: 100px 20px 40px; /* Reduce side padding */
+  }
+
+  .products {
+    justify-content: center; /* Center cards on mobile */
+  }
+
+  .card {
+    width: 100%; /* Full width cards on mobile */
+    max-width: 320px;
+  }
+
+  .price-text {
+    bottom: 85px;
+    font-size: 24px;
+  }
+}
+
+/* Fix for very small phones (iPhone SE, etc) */
+@media (max-width: 380px) {
+  .bg-text { font-size: 32vw; }
+  .can { width: 180px; }
+  .f-right { display: none; } /* Hide the biggest fruit to avoid clutter */
+}
+
 
 
