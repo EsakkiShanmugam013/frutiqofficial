@@ -238,68 +238,93 @@ a {
   border-color: #ffb13b;
   background-color: rgba(255,255,255,0.08);
 }
-/* =========================
-    📱 SHOP MOBILE FIXES
-========================= */
 
-@media (max-width: 768px) {
-  /* 1. Reset Body for scrolling */
+  /* 1. HEADER: Forced Single Line */
+  
+  @media (max-width: 768px) {
+  /* 1. Reset Body for Scrolling (CRITICAL for Shop) */
   body {
-    overflow-y: auto !important;
+    overflow-y: auto !important; /* Allows scrolling through products */
     overflow-x: hidden;
   }
 
-  /* 2. Adjust Navigation for small screens */
-  .nav {
-    padding: 15px 20px;
-  }
-  .nav a {
-    margin-left: 10px;
-    font-size: 14px;
-  }
-  .logo {
-    font-size: 24px;
+  /* 2. Shop Section Padding */
+  .shop {
+    padding: 100px 20px 40px; /* Reduced from 140px/80px */
   }
 
-  /* 3. Shop Section Spacing */
-  .shop {
-    padding: 100px 20px 40px; /* Reduced padding */
-  }
   .shop-title {
     font-size: 32px;
     margin-bottom: 30px;
   }
 
-  /* 4. Product Grid: Stack vertically */
+  /* 3. Product Grid: Single Column Stack */
   .products {
-    flex-direction: column; /* Stacks cards on top of each other */
+    flex-direction: column; /* Stacks products vertically */
     align-items: center;
-    gap: 20px;
+    gap: 25px; /* Tighten gap for mobile */
   }
 
+  /* 4. Product Card Refinement */
   .product {
-    width: 100%; /* Take full width */
-    max-width: 300px; /* But don't let them get too giant */
-    padding: 20px;
+    width: 100%; 
+    max-width: 300px; /* Prevents cards from being too wide */
+    padding: 25px;
   }
 
-  /* 5. Order Modal: Make it fit narrow screens */
+  .product img {
+    width: 140px; /* Larger product visibility */
+  }
+
+  .product h3 {
+    font-size: 18px;
+  }
+
+  .product p {
+    font-size: 16px;
+  }
+
+  /* 5. Order Modal: Mobile Accessibility */
   .order-modal {
-    width: 90%; /* Uses almost full width of phone */
+    width: 92%; /* Uses almost full width of screen */
     padding: 20px;
-    max-height: 90vh; /* Prevents modal from being taller than screen */
-    overflow-y: auto; /* Adds scroll inside modal if content is long */
+    max-height: 85vh; /* Prevents modal from cutting off on short screens */
+    overflow-y: auto; /* Allows scrolling inside modal if content is long */
   }
 
   .order-modal h2 {
     font-size: 22px;
   }
 
-  /* 6. Input Sizes (Finger Friendly) */
+  /* Ensure inputs are easy to tap (no tiny boxes) */
   .order-modal input, 
   .order-modal select, 
   .order-modal textarea {
     padding: 12px;
-    font-size: 16px; /* Prevents auto-zoom on iPhones */
+    font-size: 16px; /* Prevents iOS auto-zoom on focus */
+  }
+  .nav {
+    padding: 15px 20px;
+    flex-direction: row !important; /* Forces Logo and Links to stay side-by-side */
+    justify-content: space-between; /* Logo Left, Nav Right */
+    align-items: center;
+    width: 100%;
+  }
+
+  .logo { 
+    font-size: 22px; 
+    margin: 0; 
+  }
+
+  .nav nav { 
+    display: flex; 
+    gap: 10px; 
+    margin: 0; 
+  }
+
+  .nav a { 
+    margin: 0; 
+    font-size: 12px; 
+    font-weight: 700; 
   }
 }

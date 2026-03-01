@@ -168,6 +168,89 @@
   border-color: #ffb13b;
   background-color: rgba(255,255,255,0.08);
 }
+/* =========================
+   📱 ABOUT PAGE MOBILE FIXES
+   ========================= */
+@media (max-width: 768px) {
+  /* 1. RESET BODY: Allow scrolling for long content */
+  body {
+    overflow-y: auto !important;
+    overflow-x: hidden;
+  }
+
+  /* 2. HEADER: Single Line Logo & Nav */
+
+
+  /* 3. HERO SECTION: Center & Vertical Growth */
+  .about-hero {
+    display: block; /* Changed from flex to allow natural vertical stacking */
+    padding: 100px 20px 40px;
+    min-height: auto; /* Important: removes the 60vh height limit */
+    text-align: center;
+  }
+  .about-hero h1 {
+    color: #ffffff !important; /* Force white for the main title */
+    text-shadow: 0 4px 15px rgba(0,0,0,0.5); /* Adds depth so it sits above the BG */
+    font-size: 34px;
+    margin-top: 20px;
+  }
+
+  .about-hero p {
+    /* 1. Reset any left-side pinning */
+    margin-left: auto !important;
+    margin-right: auto !important;
+    
+    /* 2. Ensure the width is responsive */
+    width: 90%; 
+    max-width: 600px;
+    
+    /* 3. Force text centering */
+    text-align: center !important;
+    
+    /* 4. Fix contrast for readability */
+    color: #ffffff;
+    text-shadow: 0 2px 10px rgba(0,0,0,0.4);
+  }
+  /* 2. MISSION TAG (The "Our Philosophy" Badge) */
+  .about-hero .mission-tag {
+    background: #ffb13b !important; /* Solid Mango background */
+    color: #000 !important;        /* Black text for maximum pop */
+    box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+    font-weight: 800;
+  }
+
+  /* 3. FEATURE CARDS TEXT (Inside the white boxes) */
+  /* Since these cards are white, the text inside stays dark */
+  .feature-card h3 {
+    color: #111 !important; 
+  }
+
+  .feature-card p {
+    color: #444 !important;
+    text-shadow: none; /* No shadow needed inside white cards */
+  }
+
+  /* 4. CTA SECTION TEXT */
+  .about-cta p {
+    color: #ffffff !important;
+   
+    opacity: 1;
+    font-weight: 600;
+  }
+
+  .about-cta h2 {
+    font-size: 24px;
+    line-height: 1.3;
+  }
+
+  .about-cta button {
+    width: 100%;
+    max-width: 250px;
+    padding: 14px;
+    font-size: 16px;
+  }
+}
+
   </style>
 </head>
 <body>

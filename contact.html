@@ -188,6 +188,60 @@
   border-color: #ffb13b;
   background-color: rgba(255,255,255,0.08);
 }
+@media (max-width: 768px) {
+  /* 1. GLOBAL RESET: Allow scrolling & hide horizontal leaks */
+  html, body {
+    overflow-x: hidden;
+    overflow-y: auto !important;
+    height: auto;
+  }
+
+ 
+  /* 3. WRAPPERS & CONTAINERS: Universal Padding */
+  /* This prevents your content from hiding under the Nav */
+  .contact-page-wrapper, 
+  .about-hero, 
+  .shop, 
+  .profile-page,
+  .contact-container {
+    padding-top: 80px !important;
+    padding-left: 15px !important;
+    padding-right: 15px !important;
+    width: 100% !important;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+  }
+
+  /* 4. CONTENT FIX: Centering Text & Buttons */
+  h1 { font-size: 28px !important; text-align: center; }
+  p { font-size: 15px !important; text-align: center; width: 95%; }
+
+  /* 5. BOXES & CARDS: Make them stackable */
+  .contact-container, 
+  .features-grid, 
+  .products,
+  .profile-page {
+    flex-direction: column !important;
+    gap: 20px !important;
+  }
+
+  .contact-info-panel, 
+  .contact-form-panel, 
+  .feature-card, 
+  .product {
+    width: 100% !important;
+    max-width: 100% !important;
+    border-radius: 20px !important;
+    padding: 25px 20px !important;
+  }
+
+  /* 6. INPUTS: Fix iOS Zoom */
+  input, textarea, select, button {
+    font-size: 16px !important; 
+    width: 100% !important;
+  }
+}
   </style>
 </head>
 <body>

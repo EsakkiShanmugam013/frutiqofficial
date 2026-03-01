@@ -155,6 +155,87 @@ input,select{
 .order-total {
   color: #000;
 }
+@media (max-width: 768px) {
+  /* 1. LAYOUT: Stack Sidebar on Top */
+  .profile-page {
+    flex-direction: column; /* Stacks sidebar and content */
+    padding: 80px 15px 40px; /* Reduced padding for small screens */
+    gap: 20px;
+  }
+
+  /* 2. SIDEBAR: Horizontal and Compact */
+  .profile-sidebar {
+    width: 100%;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+
+  .avatar {
+    width: 70px;
+    height: 70px;
+    font-size: 28px;
+  }
+
+  /* 3. MENU: Horizontal Scroll or Grid */
+  .menu {
+    display: flex;
+    overflow-x: auto; /* Allows swiping through menu buttons */
+    width: 100%;
+    gap: 10px;
+    padding-bottom: 10px;
+    scrollbar-width: none; /* Hide scrollbar for clean look */
+  }
+  
+  .menu::-webkit-scrollbar { display: none; }
+
+  .menu button {
+    white-space: nowrap; /* Prevents text wrapping */
+    padding: 10px 20px;
+    width: auto;
+    font-size: 14px;
+    margin-bottom: 0;
+  }
+
+  /* 4. CONTENT AREA */
+  .profile-content {
+    padding: 25px 20px;
+    width: 100%;
+  }
+
+  .section h2 {
+    font-size: 24px;
+    text-align: center;
+  }
+
+  /* 5. ADDRESS & FORM FIXES */
+  #addressForm {
+    max-height: none; /* Let the page scroll naturally on mobile */
+    background: rgba(255, 255, 255, 0.05); /* Match glass theme better */
+    color: #fff;
+  }
+
+  input, select {
+    font-size: 16px; /* Prevents iOS zoom */
+    padding: 12px;
+  }
+
+  .save-btn {
+    width: 100%; /* Full width button for thumbs */
+  }
+
+  /* 6. ORDERS: Card spacing */
+  .order-card {
+    padding: 12px;
+  }
+  
+  .order-header {
+    flex-direction: column;
+    gap: 5px;
+  }
+}
 </style>
 </head>
 
