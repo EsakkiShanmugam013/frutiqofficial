@@ -11,8 +11,86 @@
 
 <style>
   body {
-  overflow-y: auto;
+  
+  color: #fff;
+  overflow: hidden;
 }
+a {
+  text-decoration: none;   /* remove underline */
+  color: inherit;          /* use parent text color */
+}
+
+
+/* NAV */
+.nav {
+  position: fixed;
+  top: 0;
+  width: 100%;
+  padding: 20px 60px;
+  display: flex;
+  justify-content: space-between;
+  z-index: 20;
+}
+
+.nav a{
+  display: inline-block; 
+  position: relative;
+  margin-left: 25px;
+  cursor: pointer;
+
+  color: #fff;
+  opacity: 0.85;
+  font-weight: 600;
+
+  transition: transform 0.3s cubic-bezier(0.4,0,0.2,1), opacity 0.25s ease;
+}
+
+/* HOVER EFFECT */
+.nav a:hover{
+  opacity: 1;
+  transform: translateY(-3px);
+}
+
+
+.logo {
+  font-family: "Quicksand", sans-serif;
+  font-size: 36px;
+  font-weight: 700;
+}
+.nav a.profile-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  margin-left: 20px;
+  border-radius: 50%;
+  border: 2px solid rgba(255, 255, 255, 0.9); /* This creates the white circle */
+  background: rgba(255, 255, 255, 0.1);
+  transition: all 0.25s ease;
+}
+
+.nav a.profile-icon:hover {
+  border-color: #ffb13b;
+  background: rgba(255, 255, 255, 0.2);
+  transform: translateY(-2px);
+}
+
+/* Ensure the SVG inside is white */
+.nav a.profile-icon svg {
+  fill: white;
+  width: 18px;
+  height: 18px;
+}
+
+/* HERO */
+.hero {
+  position: relative;
+  width: 100%;
+  height: 100vh;
+  overflow: hidden;
+}
+
 .profile-page{
   
   min-height:100vh;
@@ -156,6 +234,40 @@ input,select{
   color: #000;
 }
 @media (max-width: 768px) {
+    /* 1. HEADER: Forced Single Line */
+  .nav {
+    padding: 15px 20px;
+    flex-direction: row !important; /* Forces Logo and Links to stay side-by-side */
+    justify-content: space-between; /* Logo Left, Nav Right */
+    align-items: center;
+    width: 100%;
+  }
+
+  .logo { 
+    font-size: 22px; 
+    margin: 0; 
+  }
+
+  .nav nav { 
+    display: flex; 
+    gap: 10px; 
+    margin: 0; 
+  }
+
+  .nav a { 
+    margin: 0; 
+    font-size: 12px; 
+    font-weight: 700; 
+  }
+  .nav a.profile-icon {
+    width: 30px;
+    height: 30px;
+    margin-left: 10px;
+  }
+  .nav a.profile-icon svg {
+    width: 16px;
+    height: 16px;
+  }
   /* 1. LAYOUT: Stack Sidebar on Top */
   .profile-page {
     flex-direction: column; /* Stacks sidebar and content */
@@ -235,6 +347,7 @@ input,select{
     flex-direction: column;
     gap: 5px;
   }
+  
 }
 </style>
 </head>
@@ -262,8 +375,19 @@ input,select{
 
 
 
-<header class="nav">
+ <header class="nav">
   <div class="logo">FRUTIQ</div>
+  <nav>
+    <a href="index.html">Home</a>
+    <a href="shop.html">Shop</a>
+    <a href="about.html">About</a>
+    <a href="contact.html">Contact</a>
+    <a href="profile.html" class="profile-icon">
+  <svg width="18" height="18" fill="white" viewBox="0 0 24 24">
+    <path d="M12 12c2.7 0 5-2.3 5-5s-2.3-5-5-5-5 2.3-5 5 2.3 5 5 5zm0 2c-3.3 0-10 1.7-10 5v3h20v-3c0-3.3-6.7-5-10-5z"/>
+  </svg>
+</a>
+  </nav>
 </header>
 
 <div class="profile-page">

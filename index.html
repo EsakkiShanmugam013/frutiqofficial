@@ -415,28 +415,6 @@ window.onload = () => setFlavour("mango");
     registerSection.style.display = "none";
     loginSection.style.display = "flex";
   };
-  /* 🔑 FORGOT PASSWORD LOGIC */
-window.forgotPassword = async () => {
-    const email = document.getElementById("loginEmail").value;
-
-    if (!email) {
-        showToast("Please enter your email address first! 📧");
-        document.getElementById("loginEmail").focus();
-        return;
-    }
-
-    try {
-        await sendPasswordResetEmail(auth, email);
-        showToast("Reset link sent! Check your inbox/spam 📥");
-    } catch (e) {
-        console.error(e);
-        if (e.code === "auth/user-not-found") {
-            showToast("This email is not registered ❌");
-        } else {
-            showToast("Check your email for the link!");
-        }
-    }
-};
   /* 🍞 POP-UP HELPER */
   window.showToast = (message) => {
     const toast = document.getElementById("toast");
