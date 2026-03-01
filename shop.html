@@ -220,37 +220,84 @@
 </script>
 
 <script type="module">
-  // 1. Import necessary Firebase functions
-  import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+  window.goToProfileAddress = function () {
+  window.location.href = "profile.html#address";
+};
+  import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+  import {
+  doc,
+  getDoc,
+  collection,
+  getDocs,
+  addDoc
+} from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-  // Initialize DB using the global app
-  const db = getFirestore(); 
+  
+  async function loadUserData() {
 
-  /* 🧾 LOAD USER DATA INTO MODAL */
-  function loadUserData(){
-    const user = JSON.parse(localStorage.getItem("frutiqUserCache"));
-    if (!user) return;
-
-    document.getElementById("name").value = user.name || "";
-    document.getElementById("email").value = user.email || "";
-    document.getElementById("phone").value = user.phone || "";
-
-    const addressSelect = document.getElementById("address");
-    addressSelect.innerHTML = '<option value="">Select saved address</option>';
-
-    (user.addresses || []).forEach(a => {
-      const fullAddress = `${a.house}, ${a.street}, ${a.city}, ${a.state} - ${a.pincode} | 📞 ${a.phone}`;
-      const opt = document.createElement("option");
-      opt.value = fullAddress;
-      opt.textContent = fullAddress;
-
-      if (a.isDefault) {
-        opt.selected = true;
-        document.getElementById("phone").value = a.phone;
+    onAuthStateChanged(window.auth, async (user) => {
+      if (!user) {
+        console.log("User not logged in");
+        return;
       }
-      addressSelect.appendChild(opt);
+
+      const uid = user.uid;
+
+      try {
+        /* 🔹 LOAD BASIC USER INFO */
+        const userRef = doc(window.db, "users", uid);
+        const userSnap = await getDoc(userRef);
+
+        if (userSnap.exists()) {
+          const userData = userSnap.data();
+          document.getElementById("name").value = userData.name || "";
+          document.getElementById("email").value = userData.email || "";
+          document.getElementById("phone").value = userData.phone || "";
+        }
+
+        /* 🔹 LOAD ADDRESSES (SUB-COLLECTION) */
+        const addressSelect = document.getElementById("address");
+        addressSelect.innerHTML = `<option>Loading addresses... ☁️</option>`;
+
+        const snap = await getDocs(
+          collection(window.db, "users", uid, "addresses")
+        );
+
+        addressSelect.innerHTML = `<option value="">Select saved address</option>`;
+
+        let hasDefault = false;
+
+        snap.forEach(docSnap => {
+          const a = docSnap.data();
+
+          const fullAddress =
+            `${a.house}, ${a.street}, ${a.city}, ${a.state} - ${a.pincode} | 📞 ${a.phone}`;
+
+          const opt = document.createElement("option");
+          opt.value = docSnap.id; // address ID
+          opt.textContent = fullAddress;
+
+          if (a.isDefault) {
+            opt.selected = true;
+            document.getElementById("phone").value = a.phone;
+            hasDefault = true;
+          }
+
+          addressSelect.appendChild(opt);
+        });
+
+        if (snap.empty) {
+          addressSelect.innerHTML += `<option>No saved addresses</option>`;
+        }
+
+      } catch (error) {
+        console.error("Error loading user data:", error);
+      }
     });
   }
+
+  loadUserData();
+ 
 
   /* 🛒 UI CALCULATIONS */
   const pricePerCan = 49;
@@ -294,56 +341,82 @@
 
   checkboxes.forEach(cb => cb.addEventListener('change', updateTotal));
   qtyInputs.forEach(input => input.addEventListener('input', updateTotal));
+document.getElementById("orderForm").addEventListener("submit", async function(e) {
+  e.preventDefault();
+  const btn = document.getElementById("submit-btn");
+  btn.innerText = "Processing... ⚡";
 
-  // --- 🔥 THE MAIN CHECKOUT LOGIC ---
-  document.getElementById("orderForm").addEventListener("submit", async function(e) {
-    e.preventDefault();
-    const btn = document.getElementById("submit-btn");
-    btn.innerText = "Processing... ⚡";
-    
-    try {
-      const customerName = document.getElementById("name").value;
-      const customerEmail = document.getElementById("email").value;
-      const phone = document.getElementById("phone").value;
-      const address = document.getElementById("address").value;
-      const paymentMethod = document.querySelector('input[name="payment_method"]:checked').value;
-      const total = totalDisplay.innerText;
+  try {
+    const customerName = document.getElementById("name").value;
+    const customerEmail = document.getElementById("email").value;
+    const phone = document.getElementById("phone").value;
 
-      // 1. Prepare Data
-      let orderItemsForProfile = [];
-      let emailStringArray = []; 
+    // ✅ FIXED ADDRESS READ
+    const addressSelect = document.getElementById("address");
+    const selectedOption = addressSelect.options[addressSelect.selectedIndex];
+    const address = selectedOption ? selectedOption.textContent : "";
 
-      checkboxes.forEach(cb => {
-        if (cb.checked) {
-          const flavourName = cb.getAttribute('data-flavour');
-          const qty = document.querySelector(`.qty-input[data-flavour="${flavourName}"]`).value;
-          orderItemsForProfile.push({ name: flavourName, quantity: parseInt(qty) });
-          emailStringArray.push(`${flavourName} (${qty})`);
-        }
-      });
+    const paymentMethod =
+      document.querySelector('input[name="payment_method"]:checked').value;
+    const total = totalDisplay.innerText;
 
-      const flavourList = emailStringArray.join(", "); 
-      const user = JSON.parse(localStorage.getItem("frutiqUserCache"));
-      
-      if (!user || !user.uid) {
-        alert("Please log in to place an order!");
-        btn.innerText = "Place Order";
-        return;
+    if (!address) {
+      alert("Please select a delivery address");
+      return;
+    }
+
+    // 1. Prepare Data
+    let orderItemsForProfile = [];
+    let emailStringArray = [];
+
+    checkboxes.forEach(cb => {
+      if (cb.checked) {
+        const flavourName = cb.getAttribute('data-flavour');
+        const qty = document.querySelector(
+          `.qty-input[data-flavour="${flavourName}"]`
+        ).value;
+
+        orderItemsForProfile.push({
+          name: flavourName,
+          quantity: parseInt(qty)
+        });
+
+        emailStringArray.push(`${flavourName} (${qty})`);
       }
+    });
 
-      const newOrder = {
-        orderId: "FRQ" + Date.now().toString().slice(-6),
-        customerName, customerEmail, phone, address,
-        items: orderItemsForProfile, 
-        paymentMethod, total: Number(total),
-        status: "Pending",
-        orderDate: new Date().toLocaleString(),
-        userId: user.uid
-      };
+    const flavourList = emailStringArray.join(", ");
 
-      // 2. 🔥 SYNC TO DATABASE
-      await addDoc(collection(db, "users", user.uid, "orders"), newOrder);
+    // ❌ REMOVE localStorage USER
+    const user = window.auth.currentUser;
+    if (!user) {
+      alert("Please log in to place an order!");
+      return;
+    }
 
+    const newOrder = {
+      orderId: "FRQ" + Date.now().toString().slice(-6),
+      customerName,
+      customerEmail,
+      phone,
+      address, // ✅ REAL ADDRESS STRING
+      items: orderItemsForProfile,
+      paymentMethod,
+      total: Number(total),
+      status: "Pending",
+      orderDate: new Date().toLocaleString(),
+      userId: user.uid
+    };
+
+    // 🔥 SAVE TO FIRESTORE
+    await addDoc(
+      collection(window.db, "users", user.uid, "orders"),
+      newOrder
+    );
+
+    console.log("✅ ORDER SAVED:", newOrder);
+
+ 
       // 3. 📧 PREPARE EMAIL DESIGNS
        const receiptHTML = `<div style="font-family:sans-serif;background:#fffdf9;padding:40px;"><div style="max-width:550px;margin:auto;background:#fff;border-radius:30px;padding:40px;border:1px solid #fff1dc;text-align:center;"><h1 style="color:#ffb13b;">Order Confirmed!</h1><p>High-five, <b>${customerName}</b>! We've received your order for <b>${flavourList}</b>.</p><div style="background:#fff8ee;padding:20px;border-radius:20px;margin:20px 0;"><p><b>Location:</b> ${address}</p><p><b>Total: $${total}</b></p><p style="color:#ffb13b;font-weight:bold;">✓ ${paymentMethod}</p></div><p style="color:#bbb;font-size:12px;">Our rider will call ${phone} soon.</p></div></div>`;
 
@@ -509,6 +582,7 @@ const newsletterHTML = `
       btn.innerText = "Place Order";
     }
   });
+
 </script>
 </body>
 </html>

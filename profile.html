@@ -826,12 +826,31 @@ window.showSection = (id, btn) => {
 };
 window.openAddressForm = () => document.getElementById("addressForm").style.display = "block";
 window.closeAddressForm = () => document.getElementById("addressForm").style.display = "none";
+
+</script>
+
+<script>
+  (function waitForAddressSection() {
+    if (window.location.hash !== "#address") return;
+
+    const section = document.getElementById("address");
+
+    if (section) {
+      section.scrollIntoView({ behavior: "smooth", block: "start" });
+
+      // Highlight effect
+      section.style.boxShadow = "0 0 0 3px #ffb13b";
+      section.style.transition = "box-shadow 0.3s ease";
+      setTimeout(() => section.style.boxShadow = "", 2000);
+
+    } else {
+      // 🔁 Retry until Firebase finishes loading
+      setTimeout(waitForAddressSection, 300);
+    }
+  })();
 </script>
 
 
 
-
-
 </body>
-
 </html>
