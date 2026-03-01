@@ -314,34 +314,21 @@ a {
 @media (max-width: 768px) {
   /* Fix Body Scrolling */
   body {
-    overflow-y: auto; /* Allow scrolling on long mobile pages */
+    overflow-y: auto !important;
+    overflow-x: hidden;
   }
 
-  /* NAV: Stack or simplify navigation */
+  /* 2. Adjust Navigation for small screens */
   .nav {
     padding: 15px 20px;
-    flex-direction: column;
-    align-items: center;
-    gap: 10px;
-    background: rgba(0,0,0,0.2);
-    backdrop-filter: blur(5px);
   }
-
-  .logo {
-    font-size: 28px;
-  }
-
-  .nav nav {
-    display: flex;
-    justify-content: center;
-    width: 100%;
-  }
-
   .nav a {
-    margin: 0 10px;
+    margin-left: 10px;
     font-size: 14px;
   }
-
+  .logo {
+    font-size: 24px;
+  }
   /* HERO: Scale down big elements */
   .bg-text {
     font-size: 28vw; /* Slightly larger relative to screen */
@@ -404,6 +391,7 @@ a {
   .can { width: 180px; }
   .f-right { display: none; } /* Hide the biggest fruit to avoid clutter */
 }
+
 
 
 
