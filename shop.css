@@ -238,3 +238,68 @@ a {
   border-color: #ffb13b;
   background-color: rgba(255,255,255,0.08);
 }
+/* =========================
+    📱 SHOP MOBILE FIXES
+========================= */
+
+@media (max-width: 768px) {
+  /* 1. Reset Body for scrolling */
+  body {
+    overflow-y: auto !important;
+    overflow-x: hidden;
+  }
+
+  /* 2. Adjust Navigation for small screens */
+  .nav {
+    padding: 15px 20px;
+  }
+  .nav a {
+    margin-left: 10px;
+    font-size: 14px;
+  }
+  .logo {
+    font-size: 24px;
+  }
+
+  /* 3. Shop Section Spacing */
+  .shop {
+    padding: 100px 20px 40px; /* Reduced padding */
+  }
+  .shop-title {
+    font-size: 32px;
+    margin-bottom: 30px;
+  }
+
+  /* 4. Product Grid: Stack vertically */
+  .products {
+    flex-direction: column; /* Stacks cards on top of each other */
+    align-items: center;
+    gap: 20px;
+  }
+
+  .product {
+    width: 100%; /* Take full width */
+    max-width: 300px; /* But don't let them get too giant */
+    padding: 20px;
+  }
+
+  /* 5. Order Modal: Make it fit narrow screens */
+  .order-modal {
+    width: 90%; /* Uses almost full width of phone */
+    padding: 20px;
+    max-height: 90vh; /* Prevents modal from being taller than screen */
+    overflow-y: auto; /* Adds scroll inside modal if content is long */
+  }
+
+  .order-modal h2 {
+    font-size: 22px;
+  }
+
+  /* 6. Input Sizes (Finger Friendly) */
+  .order-modal input, 
+  .order-modal select, 
+  .order-modal textarea {
+    padding: 12px;
+    font-size: 16px; /* Prevents auto-zoom on iPhones */
+  }
+}
