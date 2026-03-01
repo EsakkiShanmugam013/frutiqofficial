@@ -124,12 +124,30 @@
       </div>
 
       <!-- ADDRESS SELECT -->
-      <div class="section-box full-width">
-        <p style="margin-bottom:12px;font-weight:800;">Delivery Address</p>
-        <select id="address" required>
-          <option value="">Select saved address</option>
-        </select>
-      </div>
+     <!-- ADDRESS SELECT -->
+<div class="section-box full-width">
+  <p style="margin-bottom:12px;font-weight:800;">Delivery Address</p>
+
+  <select id="address" required>
+    <option value="">Select saved address</option>
+  </select>
+
+  <!-- ADD ADDRESS BUTTON -->
+  <button
+    type="button"
+    onclick="goToProfileAddress()"
+    style="
+      margin-top:12px;
+      background:none;
+      border:none;
+      color:#ffb13b;
+      font-weight:700;
+      cursor:pointer;
+      text-align:left;
+    ">
+    ➕ Add new address
+  </button>
+</div>
 
       <!-- FLAVOURS -->
       <div class="section-box full-width">
@@ -181,107 +199,153 @@
     <button type="submit" class="confirm-btn" id="submit-btn">Place Order</button>
   </form>
 </div>
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+  import { getAuth } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+  import { getFirestore } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
+  const firebaseConfig = {
+    apiKey: "AIzaSyAXg7kp3po0wV2jcgoEbLUvOa2KWVyk2n0",
+    authDomain: "frutiq-a7076.firebaseapp.com",
+    projectId: "frutiq-a7076",
+    storageBucket: "frutiq-a7076.appspot.com",
+    messagingSenderId: "764361625616",
+    appId: "1:764361625616:web:556d65ad2f17614d33ba95"
+  };
 
-<script>
-function loadUserData(){
-  const user = JSON.parse(localStorage.getItem("frutiqUser")) || {};
-  const addresses = JSON.parse(localStorage.getItem("frutiqAddresses")) || [];
+  const app = initializeApp(firebaseConfig);
 
-  document.getElementById("name").value = user.name || "";
-  document.getElementById("email").value = user.email || "";
-  document.getElementById("phone").value = addresses.find(a=>a.default)?.phone || "";
+  window.auth = getAuth(app);
+  window.db = getFirestore(app);
+</script>
 
-  const addressSelect = document.getElementById("address");
-  addressSelect.innerHTML = '<option value="">Select saved address</option>';
+<script type="module">
+  // 1. Import necessary Firebase functions
+  import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-  addresses.forEach(a=>{
-    const fullAddress =
-      `${a.name}, ${a.house}, ${a.street}, ${a.city}, ${a.state} - ${a.pincode} | 📞 ${a.phone}`;
-    const opt = document.createElement("option");
-    opt.value = fullAddress;
-    opt.textContent = fullAddress;
-    if(a.default) opt.selected = true;
-    addressSelect.appendChild(opt);
-  });
-}
+  // Initialize DB using the global app
+  const db = getFirestore(); 
 
-/* CALL WHEN MODAL OPENS */
-const oldOpenOrder = openOrder;
-openOrder = function(flavour){
-  oldOpenOrder(flavour);
-  loadUserData();
-};
-const pricePerCan = 49;
-const totalDisplay = document.getElementById("total");
-const checkboxes = document.querySelectorAll('.f-check');
-const qtyInputs = document.querySelectorAll('.qty-input');
-const btn = document.getElementById("submit-btn");
+  /* 🧾 LOAD USER DATA INTO MODAL */
+  function loadUserData(){
+    const user = JSON.parse(localStorage.getItem("frutiqUserCache"));
+    if (!user) return;
 
-function updatePaymentUI() {
-  document.querySelectorAll('.payment-card').forEach(card => {
-    card.classList.toggle('active', card.querySelector('input').checked);
-  });
-}
+    document.getElementById("name").value = user.name || "";
+    document.getElementById("email").value = user.email || "";
+    document.getElementById("phone").value = user.phone || "";
 
-function updateTotal() {
-  let grandTotal = 0;
-  checkboxes.forEach(cb => {
-    const flavourName = cb.getAttribute('data-flavour');
-    const qtyInput = document.querySelector(`.qty-input[data-flavour="${flavourName}"]`);
-    if (cb.checked) {
-      qtyInput.disabled = false;
-      grandTotal += (parseInt(qtyInput.value) || 0) * pricePerCan;
-    } else {
-      qtyInput.disabled = true;
-    }
-  });
-  totalDisplay.innerText = grandTotal;
-}
+    const addressSelect = document.getElementById("address");
+    addressSelect.innerHTML = '<option value="">Select saved address</option>';
 
-function openOrder(flavour) {
-  checkboxes.forEach(cb => cb.checked = false);
-  qtyInputs.forEach(input => { input.value = 1; input.disabled = true; });
-  const targetCheck = Array.from(checkboxes).find(cb => cb.getAttribute('data-flavour') === flavour);
-  if (targetCheck) targetCheck.checked = true;
-  document.getElementById("overlay").classList.add("show");
-  document.getElementById("orderModal").classList.add("show");
-  document.body.style.overflow = "hidden";
-  updateTotal();
-}
+    (user.addresses || []).forEach(a => {
+      const fullAddress = `${a.house}, ${a.street}, ${a.city}, ${a.state} - ${a.pincode} | 📞 ${a.phone}`;
+      const opt = document.createElement("option");
+      opt.value = fullAddress;
+      opt.textContent = fullAddress;
 
-function closeOrder() {
-  document.getElementById("overlay").classList.remove("show");
-  document.getElementById("orderModal").classList.remove("show");
-  document.body.style.overflow = "auto";
-}
+      if (a.isDefault) {
+        opt.selected = true;
+        document.getElementById("phone").value = a.phone;
+      }
+      addressSelect.appendChild(opt);
+    });
+  }
 
-checkboxes.forEach(cb => cb.addEventListener('change', updateTotal));
-qtyInputs.forEach(input => input.addEventListener('input', updateTotal));
+  /* 🛒 UI CALCULATIONS */
+  const pricePerCan = 49;
+  const totalDisplay = document.getElementById("total");
+  const checkboxes = document.querySelectorAll('.f-check');
+  const qtyInputs = document.querySelectorAll('.qty-input');
 
-document.getElementById("orderForm").addEventListener("submit", function(e) {
-  e.preventDefault();
-  btn.innerText = "Processing...";
-  
-  const customerName = document.getElementById("name").value;
-  const customerEmail = document.getElementById("email").value;
-  const phone = document.getElementById("phone").value;
-  const address = document.getElementById("address").value;
-  const paymentMethod = document.querySelector('input[name="payment_method"]:checked').value;
-  const total = totalDisplay.innerText;
-
-  let orderSummary = [];
-  checkboxes.forEach(cb => {
-    if (cb.checked) {
+  window.updateTotal = function() {
+    let grandTotal = 0;
+    checkboxes.forEach(cb => {
       const flavourName = cb.getAttribute('data-flavour');
-      const qty = document.querySelector(`.qty-input[data-flavour="${flavourName}"]`).value;
-      orderSummary.push(`${flavourName} (${qty})`);
-    }
-  });
-  const flavourList = orderSummary.join(", ");
+      const qtyInput = document.querySelector(`.qty-input[data-flavour="${flavourName}"]`);
+      if (cb.checked) {
+        qtyInput.disabled = false;
+        grandTotal += (parseInt(qtyInput.value) || 0) * pricePerCan;
+      } else {
+        qtyInput.disabled = true;
+      }
+    });
+    totalDisplay.innerText = grandTotal;
+  }
 
-  // --- HTML DESIGNS ---
-  const receiptHTML = `<div style="font-family:sans-serif;background:#fffdf9;padding:40px;"><div style="max-width:550px;margin:auto;background:#fff;border-radius:30px;padding:40px;border:1px solid #fff1dc;text-align:center;"><h1 style="color:#ffb13b;">Order Confirmed!</h1><p>High-five, <b>${customerName}</b>! We've received your order for <b>${flavourList}</b>.</p><div style="background:#fff8ee;padding:20px;border-radius:20px;margin:20px 0;"><p><b>Location:</b> ${address}</p><p><b>Total: $${total}</b></p><p style="color:#ffb13b;font-weight:bold;">✓ ${paymentMethod}</p></div><p style="color:#bbb;font-size:12px;">Our rider will call ${phone} soon.</p></div></div>`;
+  window.openOrder = function(flavour) {
+    checkboxes.forEach(cb => cb.checked = false);
+    qtyInputs.forEach(input => { input.value = 1; input.disabled = true; });
+    const targetCheck = Array.from(checkboxes).find(cb => cb.getAttribute('data-flavour') === flavour);
+    if (targetCheck) targetCheck.checked = true;
+    
+    loadUserData(); 
+    document.getElementById("overlay").classList.add("show");
+    document.getElementById("orderModal").classList.add("show");
+    document.body.style.overflow = "hidden";
+    updateTotal();
+  }
+
+  window.closeOrder = function() {
+    document.getElementById("overlay").classList.remove("show");
+    document.getElementById("orderModal").classList.remove("show");
+    document.body.style.overflow = "auto";
+  }
+
+  checkboxes.forEach(cb => cb.addEventListener('change', updateTotal));
+  qtyInputs.forEach(input => input.addEventListener('input', updateTotal));
+
+  // --- 🔥 THE MAIN CHECKOUT LOGIC ---
+  document.getElementById("orderForm").addEventListener("submit", async function(e) {
+    e.preventDefault();
+    const btn = document.getElementById("submit-btn");
+    btn.innerText = "Processing... ⚡";
+    
+    try {
+      const customerName = document.getElementById("name").value;
+      const customerEmail = document.getElementById("email").value;
+      const phone = document.getElementById("phone").value;
+      const address = document.getElementById("address").value;
+      const paymentMethod = document.querySelector('input[name="payment_method"]:checked').value;
+      const total = totalDisplay.innerText;
+
+      // 1. Prepare Data
+      let orderItemsForProfile = [];
+      let emailStringArray = []; 
+
+      checkboxes.forEach(cb => {
+        if (cb.checked) {
+          const flavourName = cb.getAttribute('data-flavour');
+          const qty = document.querySelector(`.qty-input[data-flavour="${flavourName}"]`).value;
+          orderItemsForProfile.push({ name: flavourName, quantity: parseInt(qty) });
+          emailStringArray.push(`${flavourName} (${qty})`);
+        }
+      });
+
+      const flavourList = emailStringArray.join(", "); 
+      const user = JSON.parse(localStorage.getItem("frutiqUserCache"));
+      
+      if (!user || !user.uid) {
+        alert("Please log in to place an order!");
+        btn.innerText = "Place Order";
+        return;
+      }
+
+      const newOrder = {
+        orderId: "FRQ" + Date.now().toString().slice(-6),
+        customerName, customerEmail, phone, address,
+        items: orderItemsForProfile, 
+        paymentMethod, total: Number(total),
+        status: "Pending",
+        orderDate: new Date().toLocaleString(),
+        userId: user.uid
+      };
+
+      // 2. 🔥 SYNC TO DATABASE
+      await addDoc(collection(db, "users", user.uid, "orders"), newOrder);
+
+      // 3. 📧 PREPARE EMAIL DESIGNS
+       const receiptHTML = `<div style="font-family:sans-serif;background:#fffdf9;padding:40px;"><div style="max-width:550px;margin:auto;background:#fff;border-radius:30px;padding:40px;border:1px solid #fff1dc;text-align:center;"><h1 style="color:#ffb13b;">Order Confirmed!</h1><p>High-five, <b>${customerName}</b>! We've received your order for <b>${flavourList}</b>.</p><div style="background:#fff8ee;padding:20px;border-radius:20px;margin:20px 0;"><p><b>Location:</b> ${address}</p><p><b>Total: $${total}</b></p><p style="color:#ffb13b;font-weight:bold;">✓ ${paymentMethod}</p></div><p style="color:#bbb;font-size:12px;">Our rider will call ${phone} soon.</p></div></div>`;
 
   const ownerHTML = `<div style="font-family:sans-serif;background:#f4f4f4;padding:40px;"><div style="max-width:600px;margin:auto;background:#fff;border-radius:20px;overflow:hidden;"><div style="background:#2d3436;padding:20px;text-align:center;"><h1 style="color:#ffb13b;margin:0;font-size:20px;">NEW WORK ORDER</h1></div><div style="padding:40px;"><p><b>Items:</b> ${flavourList}</p><p><b>Customer:</b> ${customerName}</p><p><b>Phone:</b> ${phone}</p><p><b>Address:</b> ${address}</p><p><b>Payment:</b> ${paymentMethod}</p><div style="background:#ffb13b;color:#fff;padding:20px;text-align:center;border-radius:12px;"><h1>Total: $${total}</h1></div></div></div></div>`;
 
@@ -407,40 +471,44 @@ const newsletterHTML = `
   </table>
 </div>
 `;
-  const serviceID = "service_naplmcd";
-  const masterTemplateID = "template_l1bzfbg"; // Replace with your Master Template ID
+      const serviceID = "service_naplmcd";
+      const masterTemplateID = "template_l1bzfbg";
 
-  // 1. Send to Owner
-  emailjs.send(serviceID, masterTemplateID, {
-    subject_title: `🚨 NEW ORDER: ${customerName}`,
-    message_body: ownerHTML,
-    to_email: "frutiqofficial@gmail.com" // Set your business email
-  });
+      // 4. 📤 SEND EMAILS via Global EmailJS (available via window)
+      // Send to Owner
+      emailjs.send(serviceID, masterTemplateID, {
+        subject_title: `🚨 NEW ORDER: ${customerName}`,
+        message_body: ownerHTML,
+        to_email: "frutiqofficial@gmail.com"
+      });
 
-  // 2. Send Receipt to Customer
-  setTimeout(() => {
-    emailjs.send(serviceID, masterTemplateID, {
-      subject_title: "Woohoo! Order Confirmed ⚡",
-      message_body: receiptHTML,
-      to_email: customerEmail
-    }).then(() => {
-      alert("✅ Order Placed Successfully!");
+      // Send Receipt to Customer
+      emailjs.send(serviceID, masterTemplateID, {
+        subject_title: "Woohoo! Order Confirmed ⚡",
+        message_body: receiptHTML,
+        to_email: customerEmail
+      }).then(() => {
+        alert("✅ Order Placed Successfully!");
+        closeOrder();
+        document.getElementById("orderForm").reset();
+
+        // Delayed Newsletter (30 seconds)
+        setTimeout(() => {
+          emailjs.send(serviceID, masterTemplateID, {
+            subject_title: "Welcome to the Fam! ⚡ (Plus a gift)",
+            message_body: newsletterHTML,
+            to_email: customerEmail
+          });
+        }, 30000);
+      });
+
+    } catch (error) {
+      console.error("Error:", error);
+      alert("Something went wrong. Check connection.");
+    } finally {
       btn.innerText = "Place Order";
-      closeOrder();
-      document.getElementById("orderForm").reset();
-
-      // 3. Delayed Newsletter
-      setTimeout(() => {
-        emailjs.send(serviceID, masterTemplateID, {
-          subject_title: "Welcome to the Fam! ⚡ (Plus a gift)",
-          message_body: newsletterHTML,
-          to_email: customerEmail
-        });
-      }, 30000);
-    });
-  }, 500);
-});
+    }
+  });
 </script>
-
 </body>
 </html>

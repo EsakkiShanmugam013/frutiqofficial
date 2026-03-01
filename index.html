@@ -116,13 +116,66 @@
   border-color: #ffb13b;
   background-color: rgba(255,255,255,0.08);
 }
+/* 🍞 CUSTOM POP-UP NOTIFICATION */
+/* 🍞 CUSTOM POP-UP NOTIFICATION (FIXED) */
+.toast-message {
+  position: fixed;
+  top: 30px;
+  right: -350px; 
+  /* 🚩 FIXED: Changed background to a modern dark or soft green */
+  background: #2d3436; 
+  color: white;
+  padding: 14px 20px;
+  /* 🚩 FIXED: Reduced radius from 30px to 4px for a clean look */
+  border-radius: 4px; 
+  /* 🚩 ADDED: A small colored accent bar on the left instead of a full green curve */
+  border-left: 5px solid #4caf50; 
+  
+  font-family: "Quicksand", sans-serif;
+  font-weight: 600;
+  font-size: 15px;
+  box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+  transition: right 0.4s ease-in-out; /* Smoother, less "bouncy" transition */
+  z-index: 9999;
+}
+
+.toast-message.show {
+  right: 30px; 
+}
   </style>
 </head>
 
 <body>
+  <div id="globalLoader" style="position:fixed; top:0; left:0; width:100%; height:100vh; background-color:#121212; z-index:99999; display:flex; align-items:center; justify-content:center; color:white; font-family:'Quicksand', sans-serif; font-size:24px; font-weight:bold;">
+  Loading FRUTIQ...
+</div>
+  <div id="toast" class="toast-message"></div>
+  <script>
+  // 🔹 GLOBAL DOM REFERENCES (IMPORTANT)
+  let loginSection, registerSection, homeSection;
+  let regName, regEmail, regPassword, registerMsg;
+  let loginEmail, loginPassword, loginMsg;
+
+  document.addEventListener("DOMContentLoaded", () => {
+    loginSection = document.getElementById("loginSection");
+    registerSection = document.getElementById("registerSection");
+   
+
+    regName = document.getElementById("regName");
+    regEmail = document.getElementById("regEmail");
+    regPassword = document.getElementById("regPassword");
+    registerMsg = document.getElementById("registerMsg");
+
+    loginEmail = document.getElementById("loginEmail");
+    loginPassword = document.getElementById("loginPassword");
+    loginMsg = document.getElementById("loginMsg");
+});
+ 
+</script>
+
 
 <!-- 🔐 LOGIN -->
-<div id="loginSection" class="auth-container">
+ <div id="loginSection" class="auth-container">
   <div class="auth-brand">FRUTIQ</div>
 
   <div class="auth-box">
@@ -131,7 +184,13 @@
     <input type="email" id="loginEmail" placeholder="Email">
     <input type="password" id="loginPassword" placeholder="Password">
 
-    <button onclick="login()">Login</button>
+    <div style="text-align: right; margin-top: -8px; margin-bottom: 12px;">
+      <span class="auth-link" style="font-size: 13px; opacity: 0.8;" onclick="forgotPassword()">
+        Forgot Password?
+      </span>
+    </div>
+
+    <button type="button" onclick="login()">Login</button>
 
     <p style="margin-top:18px;">
       New user?
@@ -141,7 +200,6 @@
     <p id="loginMsg"></p>
   </div>
 </div>
-
 <!-- 📝 REGISTER -->
 <div id="registerSection" class="auth-container" style="display:none;">
   <div class="auth-brand">FRUTIQ</div>
@@ -222,86 +280,257 @@
 
 </div>
 
-<!-- 🔐 AUTH LOGIC -->
-<script>
-  function showRegister(){
-    loginSection.style.display = "none";
-    registerSection.style.display = "flex";
-  }
-
-  function showLogin(){
-    registerSection.style.display = "none";
-    loginSection.style.display = "flex";
-  }
-
-  function register(){
-    localStorage.setItem("frutiqUser", JSON.stringify({
-      name: regName.value,
-      email: regEmail.value,
-      password: regPassword.value
-    }));
-    registerMsg.innerText = "Account created ✅";
-    showLogin();
-  }
-
-  function login(){
-    const user = JSON.parse(localStorage.getItem("frutiqUser"));
-
-    if(user && loginEmail.value === user.email && loginPassword.value === user.password){
-      // ✅ CREATE SESSION
-      localStorage.setItem("frutiqSession", "active");
-
-      loginSection.style.display = "none";
-      registerSection.style.display = "none";
-      homeSection.style.display = "block";
-    }else{
-      loginMsg.innerText = "Invalid credentials ❌";
-    }
-  }
-
-  // ✅ SESSION CHECK ON PAGE LOAD
-  window.addEventListener("load", () => {
-    if(localStorage.getItem("frutiqSession") === "active"){
-      loginSection.style.display = "none";
-      registerSection.style.display = "none";
-      homeSection.style.display = "block";
-    }
-  });
 </script>
-
 <!-- 🍹 FLAVOUR SCRIPT (UNCHANGED) -->
 <script>
-  const flavours={
-    mango:{bg:"images/bg-mango.jpg",text:"MANGO",title:"Mango Rush",desc:"Tropical power. Instant energy.",can:"images/can-mango.png",slices:["images/mango-1.png","images/mango-2.png","images/mango-3.png"],overlay:"rgba(255,180,60,0.55)"},
-    apple:{bg:"images/bg-apple.jpg",text:"APPLE",title:"Apple Blast",desc:"Crisp energy. Fresh punch.",can:"images/can-apple.png",slices:["images/apple-1.png","images/apple-2.png","images/apple-3.png"],overlay:"rgba(255,80,80,0.3)"},
-    strawberry:{bg:"images/bg-strawberry.jpg",text:"BERRY",title:"Strawberry Spark",desc:"Berry bold. Charged taste.",can:"images/can-strawberry.png",slices:["images/strawberry-1.png","images/strawberry-2.png","images/strawberry-3.png"],overlay:"rgba(255,100,160,0.35)"}
+const flavours = {
+  mango: {
+    bg: "images/bg-mango.jpg",
+    text: "MANGO",
+    title: "Mango Rush",
+    desc: "Tropical power. Instant energy.",
+    can: "images/can-mango.png",
+    slices: ["images/mango-1.png","images/mango-2.png","images/mango-3.png"],
+    overlay: "rgba(255,180,60,0.55)"
+  },
+  apple: {
+    bg: "images/bg-apple.jpg",
+    text: "APPLE",
+    title: "Apple Blast",
+    desc: "Crisp energy. Fresh punch.",
+    can: "images/can-apple.png",
+    slices: ["images/apple-1.png","images/apple-2.png","images/apple-3.png"],
+    overlay: "rgba(255,80,80,0.3)"
+  },
+  strawberry: {
+    bg: "images/bg-strawberry.jpg",
+    text: "BERRY",
+    title: "Strawberry Spark",
+    desc: "Berry bold. Charged taste.",
+    can: "images/can-strawberry.png",
+    slices: ["images/strawberry-1.png","images/strawberry-2.png","images/strawberry-3.png"],
+    overlay: "rgba(255,100,160,0.35)"
+  }
+};
+
+const order = ["mango","apple","strawberry"];
+let index = 0;
+
+function restart(el, cls) {
+  el.classList.remove(cls);
+  void el.offsetWidth;
+  el.classList.add(cls);
+}
+
+function setFlavour(name) {
+  index = order.indexOf(name);
+  const f = flavours[name];
+
+  const bgText = document.getElementById("bgText");
+  const can = document.getElementById("mainCan");
+  const l = document.getElementById("sliceLeft");
+  const t = document.getElementById("sliceTop");
+  const r = document.getElementById("sliceRight");
+
+  document.getElementById("bg").style.backgroundImage = `url('${f.bg}')`;
+  document.getElementById("overlay").style.background =
+    `radial-gradient(circle at center, ${f.overlay}, transparent 70%)`;
+
+  bgText.innerText = f.text;
+  document.getElementById("title").innerText = f.title;
+  document.getElementById("desc").innerText = f.desc;
+
+  can.src = f.can;
+  l.src = f.slices[0];
+  t.src = f.slices[1];
+  r.src = f.slices[2];
+
+  restart(bgText,"animate-text");
+  restart(can,"animate-can");
+  restart(l,"animate-slice");
+  restart(t,"animate-slice");
+  restart(r,"animate-slice");
+}
+
+function nextFlavour() {
+  index = (index + 1) % order.length;
+  setFlavour(order[index]);
+}
+
+function prevFlavour() {
+  index = (index - 1 + order.length) % order.length;
+  setFlavour(order[index]);
+}
+// 🔁 AUTO SLIDE EVERY 5 SECONDS (NO MANUAL CHANGE)
+setInterval(() => {
+  nextFlavour();
+}, 7000);
+
+window.onload = () => setFlavour("mango");
+
+</script>
+<script type="module">
+  /* 🔹 Firebase SDKs */
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+  import {
+    getAuth,
+    createUserWithEmailAndPassword,
+    signInWithEmailAndPassword,
+    onAuthStateChanged,
+    signOut,
+    sendPasswordResetEmail
+  } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+  import {
+    getFirestore,
+    doc,
+    setDoc,
+    serverTimestamp
+  } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+  import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-analytics.js";
+
+  /* 🔹 Firebase config */
+  const firebaseConfig = {
+    apiKey: "AIzaSyAXg7kp3po0wV2jcgoEbLUvOa2KWVyk2n0",
+    authDomain: "frutiq-a7076.firebaseapp.com",
+    projectId: "frutiq-a7076",
+    storageBucket: "frutiq-a7076.appspot.com",
+    messagingSenderId: "764361625616",
+    appId: "1:764361625616:web:556d65ad2f17614d33ba95",
+    measurementId: "G-Z6EKHYVHPC"
   };
 
-  const order=["mango","apple","strawberry"];
-  let index=0;
+  /* 🔥 Initialize Firebase FIRST */
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+  const db = getFirestore(app);
+  getAnalytics(app);
 
-  function restart(e,c){e.classList.remove(c);void e.offsetWidth;e.classList.add(c);}
-  function setFlavour(n){
-    index=order.indexOf(n);
-    const f=flavours[n];
-    bg.style.backgroundImage=`url('${f.bg}')`;
-    overlay.style.background=`radial-gradient(circle at center, ${f.overlay}, transparent 70%)`;
-    bgText.innerText=f.text;
-    title.innerText=f.title;
-    desc.innerText=f.desc;
-    mainCan.src=f.can;
-    sliceLeft.src=f.slices[0];
-    sliceTop.src=f.slices[1];
-    sliceRight.src=f.slices[2];
-    restart(bgText,"animate-text");
-    restart(mainCan,"animate-can");
+  /* 🔹 UI helpers */
+  window.showRegister = () => {
+    loginSection.style.display = "none";
+    registerSection.style.display = "flex";
+  };
+
+  window.showLogin = () => {
+    registerSection.style.display = "none";
+    loginSection.style.display = "flex";
+  };
+  /* 🔑 FORGOT PASSWORD LOGIC */
+window.forgotPassword = async () => {
+    const email = document.getElementById("loginEmail").value;
+
+    if (!email) {
+        showToast("Please enter your email address first! 📧");
+        document.getElementById("loginEmail").focus();
+        return;
+    }
+
+    try {
+        await sendPasswordResetEmail(auth, email);
+        showToast("Reset link sent! Check your inbox/spam 📥");
+    } catch (e) {
+        console.error(e);
+        if (e.code === "auth/user-not-found") {
+            showToast("This email is not registered ❌");
+        } else {
+            showToast("Check your email for the link!");
+        }
+    }
+};
+  /* 🍞 POP-UP HELPER */
+  window.showToast = (message) => {
+    const toast = document.getElementById("toast");
+    toast.innerText = message;
+    toast.classList.add("show");
+    
+    // Hide it automatically after 3.5 seconds
+    setTimeout(() => {
+      toast.classList.remove("show");
+    }, 3500);
+  };
+   /* 📝 REGISTER */
+  window.register = async () => {
+  try {
+    // 🚩 1. Tell the listener to IGNORE the next auth change
+    window.isRegistering = true;
+
+    const cred = await createUserWithEmailAndPassword(auth, regEmail.value, regPassword.value);
+    
+    await setDoc(doc(db, "users", cred.user.uid), {
+      name: regName.value,
+      email: regEmail.value,
+      createdAt: serverTimestamp()
+    });
+
+    // 2. Clear session immediately
+    await signOut(auth);
+
+    // 🚩 3. Now that they are signed out, we can turn the flag off
+    window.isRegistering = false;
+
+    // Clear fields
+    regName.value = "";
+    regEmail.value = "";
+    regPassword.value = "";
+
+    showToast("Registered successfully ✅ Please log in.");
+    showLogin();
+
+  } catch (e) {
+    window.isRegistering = false; // Reset flag if it fails
+    registerMsg.innerText = e.message;
+    registerMsg.style.color = "#ff5050";
+  }
+};
+
+  /* 🔑 LOGIN */
+  window.login = async () => {
+    try {
+      await signInWithEmailAndPassword(
+        auth,
+        loginEmail.value,
+        loginPassword.value
+      );
+    } catch (e) {
+      loginMsg.innerText = "Invalid credentials ❌";
+    }
+  };
+   /* 🔁 THIS IS WHAT LOADS HOME PAGE */
+
+  /* 🔁 UPDATED AUTH LISTENER */
+onAuthStateChanged(auth, (user) => {
+  // 🚩 IF WE ARE IN THE MIDDLE OF REGISTERING, DO NOTHING!
+  if (window.isRegistering === true) {
+    console.log("Registration in progress... ignoring auto-login.");
+    return; 
   }
 
-  function nextFlavour(){index=(index+1)%order.length;setFlavour(order[index]);}
-  function prevFlavour(){index=(index-1+order.length)%order.length;setFlavour(order[index]);}
-  setInterval(nextFlavour,7000);
-  window.onload=()=>setFlavour("mango");
+  const loginSec = document.getElementById("loginSection");
+  const regSec = document.getElementById("registerSection");
+  const homeSec = document.getElementById("homeSection");
+  const loader = document.getElementById("globalLoader");
+
+  if (user) {
+    if (loginSec) loginSec.style.display = "none";
+    if (regSec) regSec.style.display = "none";
+    if (homeSec) homeSec.style.display = "block";
+  } else {
+    if (homeSec) homeSec.style.display = "none";
+    if (regSec) regSec.style.display = "none";
+    if (loginSec) loginSec.style.display = "flex";
+  }
+
+  if (loader) loader.style.display = "none";
+});
+  /* 🚪 LOGOUT */
+  window.logout = async () => {
+    await signOut(auth);
+  };
 </script>
+
+
+  
+
 
 </body>
 </html>

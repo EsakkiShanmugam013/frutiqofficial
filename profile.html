@@ -10,7 +10,11 @@
 <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@600;700;800&display=swap" rel="stylesheet">
 
 <style>
+  body {
+  overflow-y: auto;
+}
 .profile-page{
+  
   min-height:100vh;
   background:url("images/bg-mango.jpg") center/cover no-repeat;
   padding:120px 60px;
@@ -48,6 +52,7 @@
 .section.active{display:block;}
 .section h2{font-size:28px;margin-bottom:20px;}
 .address-card{
+
   background:rgba(255,255,255,0.12);
   padding:20px;border-radius:18px;margin-bottom:15px;
 }
@@ -56,6 +61,33 @@
 .address-actions button{
   padding:8px 14px;border-radius:20px;border:none;cursor:pointer;font-weight:600;
 }
+/* 📦 SCROLLABLE ADDRESS CONTAINER */
+/* 📝 SCROLLABLE ADDRESS FORM ONLY */
+#addressForm {
+    max-height: 300px;           /* Limits the height of the form */
+    overflow-y: auto;            /* Enables vertical scrolling inside the form */
+    padding: 15px;
+    background: #f9f9f9;         /* Light background to distinguish it */
+    border: 1px solid #ddd;
+    border-radius: 12px;
+    margin-top: 20px;
+    
+    /* Ensure inputs don't look squashed */
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+/* 🎨 CUSTOM SCROLLBAR FOR FORM */
+#addressForm::-webkit-scrollbar {
+    width: 5px;
+}
+
+#addressForm::-webkit-scrollbar-thumb {
+    background: #ffb13b; 
+    border-radius: 10px;
+}
+
 .default-badge{
   background:#ffb13b;color:#000;padding:4px 10px;border-radius:12px;
   font-size:12px;margin-left:10px;
@@ -68,16 +100,86 @@ input,select{
   background:#fff;color:#000;font-weight:bold;cursor:pointer;
 }
 .logout-btn{background:#ff4d4d;color:#fff;}
+.order-card {
+  background: #fff;
+  border-radius: 10px;
+  padding: 15px;
+  margin-bottom: 15px;
+  box-shadow: 0 3px 8px rgba(0,0,0,0.08);
+}
+
+.order-header {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+
+.order-id {
+  font-weight: bold;
+}
+
+.order-status {
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: 12px;
+  color: #fff;
+}
+
+.status-pending { background: #ff9800; }
+.status-delivered { background: #4caf50; }
+.status-cancelled { background: #f44336; }
+
+.order-items {
+  font-size: 14px;
+  margin: 6px 0;
+}
+
+.order-meta {
+  font-size: 13px;
+  color: #555;
+}
+
+.order-total {
+  font-weight: bold;
+  margin-top: 6px;
+}
+.order-card {
+  background: #ffffff;
+  color: #222;        /* 👈 THIS FIXES IT */
+}
+
+.order-meta {
+  color: #555;
+}
+
+.order-total {
+  color: #000;
+}
 </style>
 </head>
 
 <body>
+  <script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+  import { getAuth } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+  import { getFirestore } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-<script>
-if(localStorage.getItem("frutiqSession")!=="active"){
-  window.location.href="index.html";
-}
+  const firebaseConfig = {
+    apiKey: "AIzaSyAXg7kp3po0wV2jcgoEbLUvOa2KWVyk2n0",
+    authDomain: "frutiq-a7076.firebaseapp.com",
+    projectId: "frutiq-a7076",
+    storageBucket: "frutiq-a7076.appspot.com",
+    messagingSenderId: "764361625616",
+    appId: "1:764361625616:web:556d65ad2f17614d33ba95"
+  };
+
+  const app = initializeApp(firebaseConfig);
+
+  window.auth = getAuth(app);
+  window.db = getFirestore(app);
 </script>
+
+
 
 <header class="nav">
   <div class="logo">FRUTIQ</div>
@@ -99,18 +201,28 @@ if(localStorage.getItem("frutiqSession")!=="active"){
     </div>
   </div>
 
-  <div class="profile-content">
-
-    <div class="section active" id="profile">
-      <h2>Profile Info</h2>
-      <p><b>Name:</b> <span id="pName"></span></p>
-      <p><b>Email:</b> <span id="pEmail"></span></p>
+  <div class="section active" id="profile">
+  <h2>Profile Info</h2>
+  
+  <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 15px;">
+    <p style="margin: 0;">
+      <b>Name:</b> 
+      <span id="pName">Loading...</span>
+      <input type="text" id="editNameInput" style="display:none; background: rgba(255,255,255,0.1); border: 1px solid white; color: white; padding: 5px 10px; border-radius: 5px; font-family: 'Quicksand';">
+    </p>
+    
+    <div>
+      <button id="editBtn" onclick="toggleNameEdit(true)" style="background:none; border:none; color:#ffb13b; cursor:pointer; font-size: 14px; font-weight: bold;">Edit ✏️</button>
+      <button id="saveBtn" onclick="saveNewName()" style="display:none; background:#27ae60; border:none; color:white; padding: 5px 12px; border-radius: 20px; cursor:pointer; font-size: 12px;">Save ✅</button>
     </div>
+  </div>
 
+  <p><b>Email:</b> <span id="pEmail">Loading...</span></p>
+</div>
     <div class="section" id="address">
       <h2>Saved Addresses</h2>
       <div id="addressList"></div>
-      <button class="save-btn" onclick="openAddressForm()">➕ Add Address</button>
+      <button class="save-btn" onclick="prepareNewAddress()">➕ Add Address</button>
 
       <div id="addressForm" style="display:none;margin-top:20px;">
         <input id="aName" placeholder="Full Name" required>
@@ -143,88 +255,377 @@ if(localStorage.getItem("frutiqSession")!=="active"){
 
   </div>
 </div>
+<script type="module">
+/* 🔹 FIREBASE IMPORTS */
+import { onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+import { 
+  doc, getDoc, setDoc, updateDoc, collection, 
+  getDocs, addDoc, deleteDoc, serverTimestamp, query, orderBy 
+} from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-<script>
-const user = JSON.parse(localStorage.getItem("frutiqUser")) || {};
-userName.innerText = user.name || "User";
-userEmail.innerText = user.email || "";
-pName.innerText = user.name || "";
-pEmail.innerText = user.email || "";
-avatar.innerText = user.name ? user.name.split(" ").map(w=>w[0]).join("").toUpperCase() : "U";
+/* 🔐 GLOBAL STATE */
+let currentUser = null;
+let addresses = [];
 
-let addresses = JSON.parse(localStorage.getItem("frutiqAddresses")) || [];
-
-function renderAddresses(){
-  const list=document.getElementById("addressList");
-  if(!addresses.length){
-    list.innerHTML="<p>No saved addresses.</p>";
+/* 🔐 AUTH CHECK & DATA INITIALIZATION */
+onAuthStateChanged(window.auth, async (user) => {
+  if (!user) {
+    localStorage.removeItem("frutiqUserCache");
+    window.location.href = "index.html";
     return;
   }
-  list.innerHTML=addresses.map((a,i)=>`
-    <div class="address-card">
-      <b>${a.name} (${a.type}) ${a.default?'<span class="default-badge">Default</span>':''}</b>
-      <div class="address-meta">
-        ${a.house}, ${a.street}<br>
-        ${a.city}, ${a.state} - ${a.pincode}<br>
-        📞 ${a.phone}
-      </div>
-      <div class="address-actions">
-        <button onclick="setDefault(${i})">Set Default</button>
-        <button onclick="deleteAddress(${i})">Delete</button>
-      </div>
-    </div>
-  `).join("");
-}
 
-function openAddressForm(){ addressForm.style.display="block"; }
-function closeAddressForm(){ addressForm.style.display="none"; }
+  currentUser = user;
 
-function saveAddress(){
-  if(!aName.value || !aPhone.value || aPhone.value.length<10){
-    alert("Enter valid phone number ❌"); return;
+  try {
+    // 1. Load Profile
+    const userRef = doc(window.db, "users", user.uid);
+    let snap = await getDoc(userRef);
+
+    if (!snap.exists()) {
+      await setDoc(userRef, {
+        email: user.email,
+        name: "New User",
+        createdAt: serverTimestamp()
+      });
+      snap = await getDoc(userRef);
+    }
+
+    const data = snap.data();
+    renderProfileUI(data);
+    
+    // 2. Load Data from Cloud (Wait for both to finish)
+    await window.loadAddresses(); 
+    await window.loadOrders(); 
+    
+    // 3. Update Local Cache for the Shop/Order page
+    cacheUserProfile(user, data);
+
+  } catch (err) {
+    console.error("Initialization Error:", err);
   }
-  addresses.push({
-    name:aName.value,
-    phone:aPhone.value,
-    email:user.email||"",
-    house:aHouse.value,
-    street:aStreet.value,
-    city:aCity.value,
-    state:aState.value,
-    pincode:aPincode.value,
-    type:aType.value,
-    default:addresses.length===0
-  });
-  localStorage.setItem("frutiqAddresses",JSON.stringify(addresses));
-  closeAddressForm();
-  renderAddresses();
+});
+
+function renderProfileUI(data) {
+  document.getElementById("userName").innerText = data.name || "User";
+  document.getElementById("userEmail").innerText = data.email || "";
+  document.getElementById("pName").innerText = data.name || "Not set";
+  document.getElementById("pEmail").innerText = data.email || "";
+  const initial = (data.name || "U")[0].toUpperCase();
+  document.getElementById("avatar").innerText = initial;
+}
+// 1. Toggle between showing name and showing the input box
+window.toggleNameEdit = (isEditing) => {
+    const nameSpan = document.getElementById("pName");
+    const nameInput = document.getElementById("editNameInput");
+    const editBtn = document.getElementById("editBtn");
+    const saveBtn = document.getElementById("saveBtn");
+
+    if (isEditing) {
+        nameInput.value = nameSpan.innerText;
+        nameSpan.style.display = "none";
+        nameInput.style.display = "inline-block";
+        editBtn.style.display = "none";
+        saveBtn.style.display = "inline-block";
+    } else {
+        nameSpan.style.display = "inline-block";
+        nameInput.style.display = "none";
+        editBtn.style.display = "inline-block";
+        saveBtn.style.display = "none";
+    }
+};
+
+// 2. Save the new name to Firestore
+window.saveNewName = async () => {
+    const newName = document.getElementById("editNameInput").value;
+    const user = auth.currentUser;
+
+    if (!newName || newName.trim() === "") {
+        alert("Name cannot be empty!");
+        return;
+    }
+
+    try {
+        const userRef = doc(db, "users", user.uid);
+        
+        // Update Firebase
+        await updateDoc(userRef, { name: newName });
+
+        // Update UI
+        document.getElementById("pName").innerText = newName;
+        toggleNameEdit(false);
+        
+        // If you have the showToast function from before:
+        if(window.showToast) showToast("Name updated! ✨");
+        else alert("Name updated! ✨");
+        
+    } catch (error) {
+        console.error("Error updating name:", error);
+        alert("Failed to update name. Try again.");
+    }
+};
+
+/* 🏠 ADDRESS LOGIC */
+window.loadAddresses = async function() {
+  const list = document.getElementById("addressList");
+  if (!list || !currentUser) return;
+  list.innerHTML = "<p>Loading addresses from cloud... ☁️</p>";
+  
+  try {
+    const snap = await getDocs(collection(window.db, "users", currentUser.uid, "addresses"));
+    addresses = [];
+    snap.forEach(d => addresses.push({ id: d.id, ...d.data() }));
+
+    if (addresses.length === 0) {
+      list.innerHTML = "<p>No saved addresses.</p>";
+    } else {
+       /* 🧾 UPDATED ADDRESS CARD HTML */
+list.innerHTML = addresses.map(a => `
+  <div class="address-card">
+    <b style="color:white;">${a.name || 'Address'} (${a.type}) ${a.isDefault ? '<span class="default-badge">Default</span>' : ''}</b>
+    <div class="address-meta">
+      ${a.house}, ${a.street}<br>${a.city}, ${a.state} - ${a.pincode}<br>📞 ${a.phone}
+    </div>
+    <div class="address-actions" style="margin-top:10px; display:flex; gap:8px;">
+      <button onclick="editAddress('${a.id}')" style="background:#4a90e2; color:white;">Edit ✏️</button>
+      <button onclick="setDefault('${a.id}')">Set Default</button>
+      <button onclick="deleteAddress('${a.id}')" style="background:#ff4d4d; color:white;">Delete</button>
+    </div>
+  </div>
+`).join("");
+    }
+  } catch (err) {
+    console.error("Load Address Error:", err);
+  }
+};
+window.prepareNewAddress = function() {
+  // 1. Reset the global ID so the code knows this is NEW, not an Edit
+  window.editingAddressId = null;
+
+  // 2. Clear all input fields
+  document.getElementById("aName").value = "";
+  document.getElementById("aPhone").value = "";
+  document.getElementById("aHouse").value = "";
+  document.getElementById("aStreet").value = "";
+  document.getElementById("aCity").value = "";
+  document.getElementById("aState").value = "";
+  document.getElementById("aPincode").value = "";
+  document.getElementById("aType").value = "Home";
+
+  // 3. Reset the button text back to "Save"
+  const saveBtn = document.querySelector("#addressForm .save-btn");
+  if (saveBtn) saveBtn.innerText = "Save Address";
+
+  // 4. Open the form
+  window.openAddressForm();
+};
+/* 📂 OPEN FORM */
+window.openAddressForm = function() {
+  const form = document.getElementById("addressForm");
+  const saveBtn = document.querySelector("#addressForm .save-btn");
+  
+  // If we aren't editing, clear the fields
+  if (!window.editingAddressId) {
+    document.getElementById("aName").value = "";
+    document.getElementById("aPhone").value = "";
+    document.getElementById("aHouse").value = "";
+    document.getElementById("aStreet").value = "";
+    document.getElementById("aCity").value = "";
+    document.getElementById("aState").value = "";
+    document.getElementById("aPincode").value = "";
+    document.getElementById("aType").value = "Home";
+    if (saveBtn) saveBtn.innerText = "Save Address";
+  }
+
+  form.style.display = "block";
+};
+
+/* ❌ CLOSE FORM */
+window.closeAddressForm = function() {
+  document.getElementById("addressForm").style.display = "none";
+  window.editingAddressId = null; // 🚩 ALWAYS reset this so the next "Add" isn't an "Edit"
+};
+window.editAddress = function(id) {
+  // 1. Find the address in our local array
+  const addr = addresses.find(item => item.id === id);
+  if (!addr) return;
+
+  // 2. Set the global editing ID (you need to define this at the top of your script)
+  window.editingAddressId = id;
+
+  // 3. Fill the form fields
+  document.getElementById("aName").value = addr.name || "";
+  document.getElementById("aPhone").value = addr.phone || "";
+  document.getElementById("aHouse").value = addr.house || "";
+  document.getElementById("aStreet").value = addr.street || "";
+  document.getElementById("aCity").value = addr.city || "";
+  document.getElementById("aState").value = addr.state || "";
+  document.getElementById("aPincode").value = addr.pincode || "";
+  document.getElementById("aType").value = addr.type || "Home";
+
+  // 4. Open the form and change button text
+  openAddressForm(); 
+  const saveBtn = document.querySelector("#addressForm .save-btn");
+  if (saveBtn) saveBtn.innerText = "Update Address";
+};
+/* ➕ SAVE OR UPDATE ADDRESS */
+window.saveAddress = async function() {
+  if (!currentUser) return;
+  
+  const data = {
+    name: document.getElementById("aName").value,
+    phone: document.getElementById("aPhone").value,
+    house: document.getElementById("aHouse").value,
+    street: document.getElementById("aStreet").value,
+    city: document.getElementById("aCity").value,
+    state: document.getElementById("aState").value,
+    pincode: document.getElementById("aPincode").value,
+    type: document.getElementById("aType").value,
+  };
+
+  if(!data.phone || !data.house) { alert("Please fill required fields!"); return; }
+
+  try {
+    const userAddrRef = collection(window.db, "users", currentUser.uid, "addresses");
+
+    if (window.editingAddressId) {
+      // ✏️ UPDATE EXISTING
+      const docRef = doc(window.db, "users", currentUser.uid, "addresses", window.editingAddressId);
+      await updateDoc(docRef, { ...data, updatedAt: serverTimestamp() });
+      alert("Address Updated! ✅");
+    } else {
+      // ➕ ADD NEW
+      data.isDefault = addresses.length === 0;
+      data.createdAt = serverTimestamp();
+      await addDoc(userAddrRef, data);
+      alert("Address Saved! ✅");
+    }
+
+    window.closeAddressForm(); // This will also reset the ID via the fix below
+    window.loadAddresses();
+  } catch (e) { 
+    alert("Error: " + e.message); 
+  }
+};
+/* 🧾 ORDER HISTORY (NEWEST FIRST) */
+/* 🧾 LOAD & MANUAL SORT ORDERS (Fixed Logic) */
+window.loadOrders = async function() {
+  const list = document.getElementById("orderList");
+  if (!list || !currentUser) return;
+  list.innerHTML = "<p>Organizing your history... 🕒</p>";
+
+  try {
+    const ordersRef = collection(window.db, "users", currentUser.uid, "orders");
+    const querySnapshot = await getDocs(ordersRef);
+
+    if (querySnapshot.empty) {
+      list.innerHTML = "<p>No orders yet.</p>";
+      return;
+    }
+
+    // 1. Get raw data into an array
+    let allOrders = [];
+    querySnapshot.forEach(doc => {
+      allOrders.push({ id: doc.id, ...doc.data() });
+    });
+
+    // 2. FIXED MANUAL SORT: Convert to numeric Timestamps for comparison
+    allOrders.sort((a, b) => {
+      // Helper to turn any date format into a sortable number
+      const getTime = (dateStr) => {
+        const d = new Date(dateStr);
+        // If the date is invalid (NaN), return 0 so it goes to the bottom
+        return isNaN(d.getTime()) ? 0 : d.getTime();
+      };
+
+      const timeA = getTime(a.orderDate);
+      const timeB = getTime(b.orderDate);
+
+      return timeB - timeA; // Newest (Biggest Number) on top
+    });
+
+    // 3. RENDER THE SORTED LIST
+    list.innerHTML = allOrders.map(o => {
+  const items = o.items ? o.items.map(i => `${i.quantity}x ${i.name}`).join(", ") : "N/A";
+  
+  // Use "Order Confirmed" as the default display text if status is missing
+  const currentStatus = (o.status && o.status !== "Pending") ? o.status : "Order Confirmed";
+  const displayTime = typeof timeAgo === 'function' ? timeAgo(o.orderDate) : o.orderDate;
+
+  return `
+    <div class="order-card" style="background: white; color: #222; padding: 18px; border-radius: 12px; margin-bottom: 16px; border-left: 6px solid #ffb13b; box-shadow: 0 4px 10px rgba(0,0,0,0.1);">
+      <div class="order-header" style="display:flex; justify-content:space-between; align-items:flex-start;">
+        <div>
+          <strong style="color:#000; font-size:16px;">Order #${o.orderId}</strong>
+          <div style="font-size:12px; color:#888; margin-top:2px;">${displayTime}</div>
+        </div>
+        <span class="order-status ${getStatusClass(currentStatus)}" style="padding:4px 10px; border-radius:20px; font-size:11px; color:white; font-weight:700; text-transform: uppercase;">
+          ${currentStatus}
+        </span>
+      </div>
+      <div class="order-meta" style="margin-top:12px; font-size:14px; border-top:1px solid #eee; padding-top:10px;">
+        <p>🛍️ <b>Items:</b> ${items}</p>
+        <p style="font-weight:800; color:#000; font-size:1.1rem; margin-top:8px;">Total: $${o.total}</p>
+      </div>
+    </div>`;
+    }).join("");
+
+  } catch (error) {
+    console.error("Local Sort Error:", error);
+    list.innerHTML = "<p>Error sorting orders.</p>";
+  }
+};
+
+function getStatusClass(status) {
+  const s = (status || "Order confirmed").toLowerCase();
+  if (s === 'delivered') return 'status-delivered';
+  if (s === 'cancelled') return 'status-cancelled';
+  return 'status-pending';
 }
 
-function setDefault(i){
-  addresses.forEach(a=>a.default=false);
-  addresses[i].default=true;
-  localStorage.setItem("frutiqAddresses",JSON.stringify(addresses));
-  renderAddresses();
+/* 💾 CACHE FOR SHOP PAGE */
+async function cacheUserProfile(user, userData) {
+  const profileCache = { 
+    uid: user.uid, 
+    name: userData.name, 
+    email: userData.email, 
+    addresses: addresses 
+  };
+  localStorage.setItem("frutiqUserCache", JSON.stringify(profileCache));
 }
-function deleteAddress(i){
-  addresses.splice(i,1);
-  localStorage.setItem("frutiqAddresses",JSON.stringify(addresses));
-  renderAddresses();
-}
-renderAddresses();
 
-function showSection(id,btn){
-  document.querySelectorAll(".section").forEach(s=>s.classList.remove("active"));
-  document.querySelectorAll(".menu button").forEach(b=>b.classList.remove("active"));
+/* 🛠️ WINDOW UTILITIES */
+window.deleteAddress = async function(id) {
+  try {
+    await deleteDoc(doc(window.db, "users", currentUser.uid, "addresses", id));
+    window.loadAddresses();
+  } catch(e) { alert("Delete failed"); }
+};
+
+window.setDefault = async function(id) {
+  try {
+    for (const a of addresses) {
+      await updateDoc(doc(window.db, "users", currentUser.uid, "addresses", a.id), { isDefault: a.id === id });
+    }
+    window.loadAddresses();
+  } catch(e) { alert("Update failed"); }
+};
+
+window.logout = async () => { await signOut(window.auth); };
+window.goHome = () => { window.location.href = "index.html"; };
+window.showSection = (id, btn) => {
+  document.querySelectorAll(".section").forEach(s => s.classList.remove("active"));
+  document.querySelectorAll(".menu button").forEach(b => b.classList.remove("active"));
   document.getElementById(id).classList.add("active");
   btn.classList.add("active");
-}
-function goHome(){ window.location.href="index.html"; }
-function logout(){
-  localStorage.removeItem("frutiqSession");
-  window.location.href="index.html";
-}
+};
+window.openAddressForm = () => document.getElementById("addressForm").style.display = "block";
+window.closeAddressForm = () => document.getElementById("addressForm").style.display = "none";
 </script>
+
+
+
+
 
 </body>
 </html>
