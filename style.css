@@ -13,7 +13,7 @@
 body {
   
   color: #fff;
-  overflow: hidden;
+  overflow: auto;
 }
 a {
   text-decoration: none;   /* remove underline */
