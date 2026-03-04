@@ -8,6 +8,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="shop.css">
+<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
 
 <style>
   /* --- PROFESSIONAL MODAL STYLING --- */
@@ -60,11 +61,35 @@
     background: #ffb13b; color: white; border: none; padding: 18px 50px;
     border-radius: 15px; font-weight: 800; font-size: 18px; cursor: pointer; width: 100%;
   }
+  #couponInput {
+    transition: all 0.3s ease;
+    border: 2px solid transparent;
+}
+
+/* Add a glowing effect when the coupon is revealed */
+.coupon-unlocked {
+    border-color: #ffb13b !important;
+    box-shadow: 0 0 20px rgba(255, 177, 59, 0.4);
+    background: #fff !important;
+    color: #000 !important;
+}
+#scratchCanvas {
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 10; /* Keeps it on top for scratching */
+}
+
+/* When the reveal happens, we kill the z-index */
+#scratchCanvas[style*="opacity: 0"] {
+    pointer-events: none !important;
+    z-index: -1 !important;
+}
 </style>
 
 <script src="https://cdn.jsdelivr.net/npm/emailjs-com@3/dist/email.min.js"></script>
 <script>
-(function(){ emailjs.init("gvPecLwC73y7pY9UV"); })();
+(function(){ emailjs.init("cCBmAQH1LRiPSUKO3"); })();
 </script>
 </head>
 
@@ -110,93 +135,109 @@
 
 <div class="overlay" id="overlay" onclick="closeOrder()"></div>
 
-<div class="order-modal" id="orderModal">
-  <h2>Checkout Order</h2>
+<div class="order-modal" id="orderModal" style="
+    font-family: 'Quicksand', sans-serif;
+    padding: 40px;
+    background: #ffffff;
+    border-radius: 30px;
+    box-shadow: 0 25px 80px rgba(0,0,0,0.1);
+">
+  <h2 style="
+      font-size: 32px; 
+      font-weight: 800; 
+      color: #1a1a1a; 
+      margin-bottom: 30px; 
+      letter-spacing: -1px;
+  ">Checkout Order</h2>
 
   <form id="orderForm">
-    <div class="form-grid">
+    <div class="form-grid" style="display: flex; flex-direction: column; gap: 20px;">
 
-      <!-- AUTO-FILLED USER DETAILS -->
-      <input type="text" id="name" placeholder="Full Name" readonly>
-      <input type="email" id="email" placeholder="Email Address" readonly>
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+        <input type="text" id="name" placeholder="Full Name" readonly style="background: #f9f9f9; border: 1px solid #eee; padding: 15px; border-radius: 12px; font-weight: 600; color: #666; cursor: not-allowed;">
+        <input type="email" id="email" placeholder="Email Address" readonly style="background: #f9f9f9; border: 1px solid #eee; padding: 15px; border-radius: 12px; font-weight: 600; color: #666; cursor: not-allowed;">
+      </div>
       <div class="full-width">
-        <input type="tel" id="phone" placeholder="Phone Number" readonly>
+        <input type="tel" id="phone" placeholder="Phone Number" readonly style="width: 100%; background: #f9f9f9; border: 1px solid #eee; padding: 15px; border-radius: 12px; font-weight: 600; color: #666; cursor: not-allowed; box-sizing: border-box;">
       </div>
 
-      <!-- ADDRESS SELECT -->
-     <!-- ADDRESS SELECT -->
-<div class="section-box full-width">
-  <p style="margin-bottom:12px;font-weight:800;">Delivery Address</p>
+      <div class="section-box full-width" style="background: #fff; border: 1.5px solid #f0f0f0; padding: 25px; border-radius: 20px;">
+        <p style="margin-bottom: 15px; font-weight: 800; color: #1a1a1a; font-size: 14px; text-transform: uppercase; letter-spacing: 1px;">Delivery Address</p>
 
-  <select id="address" required>
-    <option value="">Select saved address</option>
-  </select>
+        <select id="address" required style="width: 100%; padding: 14px; border: 1px solid #ddd; border-radius: 12px; background: #fff; font-family: inherit; font-weight: 600; color: #444; cursor: pointer;">
+          <option value="">Select saved address</option>
+        </select>
 
-  <!-- ADD ADDRESS BUTTON -->
-  <button
-    type="button"
-    onclick="goToProfileAddress()"
-    style="
-      margin-top:12px;
-      background:none;
-      border:none;
-      color:#ffb13b;
-      font-weight:700;
-      cursor:pointer;
-      text-align:left;
-    ">
-    ➕ Add new address
-  </button>
-</div>
-
-      <!-- FLAVOURS -->
-      <div class="section-box full-width">
-        <p style="margin-bottom: 15px; font-weight: 800;">Select Your Flavours</p>
-
-        <div class="flavour-item">
-          <label><input type="checkbox" class="f-check" data-flavour="Mango"> Mango Rush</label>
-          <div style="display:flex;align-items:center;gap:10px;">
-            <span style="font-size:12px;font-weight:800;color:#999;">QTY</span>
-            <input type="number" class="qty-input" data-flavour="Mango" min="1" value="1" disabled>
-          </div>
-        </div>
-
-        <div class="flavour-item">
-          <label><input type="checkbox" class="f-check" data-flavour="Apple"> Apple Blast</label>
-          <div style="display:flex;align-items:center;gap:10px;">
-            <span style="font-size:12px;font-weight:800;color:#999;">QTY</span>
-            <input type="number" class="qty-input" data-flavour="Apple" min="1" value="1" disabled>
-          </div>
-        </div>
-
-        <div class="flavour-item">
-          <label><input type="checkbox" class="f-check" data-flavour="Strawberry"> Strawberry Spark</label>
-          <div style="display:flex;align-items:center;gap:10px;">
-            <span style="font-size:12px;font-weight:800;color:#999;">QTY</span>
-            <input type="number" class="qty-input" data-flavour="Strawberry" min="1" value="1" disabled>
-          </div>
-        </div>
+        <button type="button" onclick="goToProfileAddress()" style="margin-top: 15px; background: none; border: none; color: #ffb13b; font-weight: 700; cursor: pointer; text-align: left; font-size: 14px; display: flex; align-items: center; gap: 5px;">
+          <span>➕</span> Add new address
+        </button>
       </div>
 
-      <!-- PAYMENT -->
-      <div class="section-box full-width">
-        <p style="margin-bottom:10px;font-weight:800;">Payment Method</p>
-        <div class="payment-options">
-          <label class="payment-card active">
-            <input type="radio" name="payment_method" value="Cash on Delivery" checked onchange="updatePaymentUI()">
-            💵 Cash on Delivery
+      <div class="section-box full-width" style="background: #fff; border: 1.5px solid #f0f0f0; padding: 25px; border-radius: 20px;">
+        <p style="margin-bottom: 20px; font-weight: 800; color: #1a1a1a; font-size: 14px; text-transform: uppercase; letter-spacing: 1px;">Select Your Flavours</p>
+
+        <div class="flavour-item" style="display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid #f5f5f5;">
+          <label style="font-weight: 700; color: #333; cursor: pointer; display: flex; align-items: center; gap: 10px;">
+            <input type="checkbox" class="f-check" data-flavour="Mango" style="width: 18px; height: 18px; accent-color: #ffb13b;"> Mango Rush
           </label>
-          <label class="payment-card">
-            <input type="radio" name="payment_method" value="Online Payment" onchange="updatePaymentUI()">
-            💳 Online Payment
+          <div style="display: flex; align-items: center; gap: 12px;">
+            <span style="font-size: 11px; font-weight: 800; color: #bbb; text-transform: uppercase;">Qty</span>
+            <input type="number" class="qty-input" data-flavour="Mango" min="1" value="1" disabled style="width: 50px; padding: 8px; border: 1px solid #eee; border-radius: 8px; text-align: center; font-weight: 700;">
+          </div>
+        </div>
+
+        <div class="flavour-item" style="display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid #f5f5f5;">
+          <label style="font-weight: 700; color: #333; cursor: pointer; display: flex; align-items: center; gap: 10px;">
+            <input type="checkbox" class="f-check" data-flavour="Apple" style="width: 18px; height: 18px; accent-color: #ffb13b;"> Apple Blast
+          </label>
+          <div style="display: flex; align-items: center; gap: 12px;">
+            <span style="font-size: 11px; font-weight: 800; color: #bbb; text-transform: uppercase;">Qty</span>
+            <input type="number" class="qty-input" data-flavour="Apple" min="1" value="1" disabled style="width: 50px; padding: 8px; border: 1px solid #eee; border-radius: 8px; text-align: center; font-weight: 700;">
+          </div>
+        </div>
+
+        <div class="flavour-item" style="display: flex; justify-content: space-between; align-items: center; padding: 12px 0;">
+          <label style="font-weight: 700; color: #333; cursor: pointer; display: flex; align-items: center; gap: 10px;">
+            <input type="checkbox" class="f-check" data-flavour="Strawberry" style="width: 18px; height: 18px; accent-color: #ffb13b;"> Strawberry Spark
+          </label>
+          <div style="display: flex; align-items: center; gap: 12px;">
+            <span style="font-size: 11px; font-weight: 800; color: #bbb; text-transform: uppercase;">Qty</span>
+            <input type="number" class="qty-input" data-flavour="Strawberry" min="1" value="1" disabled style="width: 50px; padding: 8px; border: 1px solid #eee; border-radius: 8px; text-align: center; font-weight: 700;">
+          </div>
+        </div>
+      </div>
+
+      <div class="section-box full-width" style="background: #fff; border: 1.5px solid #f0f0f0; padding: 25px; border-radius: 20px;">
+        <p style="margin-bottom: 15px; font-weight: 800; color: #1a1a1a; font-size: 14px; text-transform: uppercase; letter-spacing: 1px;">Payment Method</p>
+        <div class="payment-options" style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+          <label class="payment-card active" style="cursor: pointer;">
+            <input type="radio" name="payment_method" value="Cash on Delivery" checked onchange="updatePaymentUI()" style="display: none;">
+            <div style="padding: 15px; border: 2px solid #ffb13b; border-radius: 12px; text-align: center; font-weight: 700; background: #fffcf5; color: #ffb13b;">💵 Cash on Delivery</div>
+          </label>
+          <label class="payment-card" style="cursor: pointer;">
+            <input type="radio" name="payment_method" value="Online Payment" onchange="updatePaymentUI()" style="display: none;">
+            <div style="padding: 15px; border: 2px solid #eee; border-radius: 12px; text-align: center; font-weight: 700; color: #888;">💳 Online Payment</div>
           </label>
         </div>
       </div>
 
     </div>
+    <div class="section-box full-width" style="background: #fff; border: 1.5px solid #f0f0f0; padding: 20px; border-radius: 20px; margin-top: 10px;">
+  <p style="margin-bottom: 10px; font-weight: 800; color: #1a1a1a; font-size: 13px; text-transform: uppercase;">Have a Coupon?</p>
+  <div style="display: flex; gap: 10px;">
+    <input type="text" id="couponInput" placeholder="Enter code" style="flex: 1; padding: 12px; border: 1px solid #ddd; border-radius: 10px; font-weight: 600;">
+    <button type="button" onclick="applyCoupon()" style="background: #1a1a1a; color: #fff; border: none; padding: 10px 20px; border-radius: 10px; font-weight: 700; cursor: pointer;">Apply</button>
+  </div>
+  <p id="couponMsg" style="font-size: 12px; margin-top: 8px; font-weight: 700;"></p>
+</div>
 
-    <div class="price">Total: $<span id="total">0</span></div>
-    <button type="submit" class="confirm-btn" id="submit-btn">Place Order</button>
+    <div style="margin-top: 30px; display: flex; align-items: center; justify-content: space-between; background: #1a1a1a; padding: 30px; border-radius: 24px;">
+      <div>
+        <p style="color: #888; font-size: 12px; font-weight: 800; margin: 0; text-transform: uppercase;">Grand Total</p>
+        <div class="price" style="font-size: 36px; font-weight: 800; color: #fff; margin: 0;">$<span id="total">0</span></div>
+      </div>
+      <button type="submit" class="confirm-btn" id="submit-btn" style="background: #ffb13b; color: #fff; border: none; padding: 18px 45px; border-radius: 15px; font-weight: 800; font-size: 18px; cursor: pointer; transition: transform 0.2s;">Place Order</button>
+    </div>
   </form>
 </div>
 <script type="module">
@@ -229,7 +270,8 @@
   getDoc,
   collection,
   getDocs,
-  addDoc
+  addDoc,
+  updateDoc
 } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
   
@@ -304,21 +346,109 @@
   const totalDisplay = document.getElementById("total");
   const checkboxes = document.querySelectorAll('.f-check');
   const qtyInputs = document.querySelectorAll('.qty-input');
-
+  let couponDiscount = 0;
+  let appliedCouponCode = null;
   window.updateTotal = function() {
-    let grandTotal = 0;
-    checkboxes.forEach(cb => {
-      const flavourName = cb.getAttribute('data-flavour');
-      const qtyInput = document.querySelector(`.qty-input[data-flavour="${flavourName}"]`);
-      if (cb.checked) {
-        qtyInput.disabled = false;
-        grandTotal += (parseInt(qtyInput.value) || 0) * pricePerCan;
-      } else {
-        qtyInput.disabled = true;
+
+  let grandTotal = 0;
+
+  checkboxes.forEach(cb => {
+
+    const flavourName = cb.getAttribute('data-flavour');
+
+    const qtyInput = document.querySelector(
+      `.qty-input[data-flavour="${flavourName}"]`
+    );
+
+    if (cb.checked) {
+
+      qtyInput.disabled = false;
+
+      grandTotal += (parseInt(qtyInput.value) || 0) * pricePerCan;
+
+    } else {
+
+      qtyInput.disabled = true;
+
+    }
+    
+
+  });
+
+  grandTotal = grandTotal - couponDiscount;
+
+  if(grandTotal < 0) grandTotal = 0;
+
+  totalDisplay.innerText = grandTotal;
+
+}
+window.applyCoupon = async function(){
+
+  const code = document.getElementById("couponInput").value.trim();
+  const msg = document.getElementById("couponMsg");
+
+  if(!code){
+    msg.innerText = "Enter coupon code";
+    msg.style.color = "red";
+    return;
+  }
+
+  const user = window.auth.currentUser;
+  if(!user){
+  alert("Login required");
+  return;
+}
+
+  try{
+
+    const snap = await getDocs(
+      collection(window.db, "users", user.uid, "coupons")
+    );
+
+    let couponDoc = null;
+
+    snap.forEach(docSnap=>{
+      const data = docSnap.data();
+
+      if(data.code.toUpperCase() === code.toUpperCase()){
+        couponDoc = data;
       }
     });
-    totalDisplay.innerText = grandTotal;
+
+    if(!couponDoc){
+      msg.innerText = "Invalid coupon";
+      msg.style.color = "red";
+      return;
+    }
+
+    if(couponDoc.used){
+      msg.innerText = "Coupon already used";
+      msg.style.color = "red";
+      return;
+    }
+
+    const now = new Date();
+    const expiry = new Date(couponDoc.expiry);
+
+    if(now > expiry){
+      msg.innerText = "Coupon expired";
+      msg.style.color = "red";
+      return;
+    }
+
+    couponDiscount = couponDoc.discount;
+    appliedCouponCode = couponDoc.code;
+
+    msg.innerText = "$"+couponDiscount+" discount applied 🎉";
+    msg.style.color = "green";
+
+    updateTotal();
+
+  }catch(err){
+    console.error(err);
   }
+
+}
 
   window.openOrder = function(flavour) {
     checkboxes.forEach(cb => cb.checked = false);
@@ -338,7 +468,17 @@
     document.getElementById("orderModal").classList.remove("show");
     document.body.style.overflow = "auto";
   }
-
+  window.updatePaymentUI = function() {
+    const cards = document.querySelectorAll('.payment-card');
+    cards.forEach(card => {
+        const radio = card.querySelector('input');
+        if (radio.checked) {
+            card.classList.add('active');
+        } else {
+            card.classList.remove('active');
+        }
+    });
+}
   checkboxes.forEach(cb => cb.addEventListener('change', updateTotal));
   qtyInputs.forEach(input => input.addEventListener('input', updateTotal));
 document.getElementById("orderForm").addEventListener("submit", async function(e) {
@@ -394,27 +534,57 @@ document.getElementById("orderForm").addEventListener("submit", async function(e
       return;
     }
 
-    const newOrder = {
-      orderId: "FRQ" + Date.now().toString().slice(-6),
-      customerName,
-      customerEmail,
-      phone,
-      address, // ✅ REAL ADDRESS STRING
-      items: orderItemsForProfile,
-      paymentMethod,
-      total: Number(total),
-      status: "Pending",
-      orderDate: new Date().toLocaleString(),
-      userId: user.uid
-    };
+const newOrder = {
+  orderId: "FRQ" + Date.now().toString().slice(-6),
+  customerName,
+  customerEmail,
+  phone,
+  address,
+  items: orderItemsForProfile,
+  paymentMethod,
+  total: Number(total),
 
+  // ⭐ ADD THESE
+  couponUsed: appliedCouponCode || null,
+  couponDiscount: couponDiscount || 0,
+
+  status: "Pending",
+  orderDate: new Date().toLocaleString(),
+  userId: user.uid
+};
+console.log("ORDER OBJECT:", newOrder);
     // 🔥 SAVE TO FIRESTORE
-    await addDoc(
-      collection(window.db, "users", user.uid, "orders"),
-      newOrder
-    );
+   const orderRef = await addDoc(
+  collection(window.db, "users", user.uid, "orders"),
+  newOrder
+);
+
+// ⭐ Save last order ID globally
+window.lastOrderId = orderRef.id;
 
     console.log("✅ ORDER SAVED:", newOrder);
+    if(appliedCouponCode){
+       
+
+  const snap = await getDocs(
+    collection(window.db, "users", user.uid, "coupons")
+  );
+
+  snap.forEach(async docSnap => {
+
+    const data = docSnap.data();
+
+    if(data.code === appliedCouponCode){
+
+      await updateDoc(docSnap.ref,{
+        used:true
+      });
+
+    }
+
+  });
+
+}
 
  
       // 3. 📧 PREPARE EMAIL DESIGNS
@@ -544,8 +714,8 @@ const newsletterHTML = `
   </table>
 </div>
 `;
-      const serviceID = "service_naplmcd";
-      const masterTemplateID = "template_l1bzfbg";
+      const serviceID = "service_iyhht68";
+      const masterTemplateID = "template_1y5m1zt";
 
       // 4. 📤 SEND EMAILS via Global EmailJS (available via window)
       // Send to Owner
@@ -556,16 +726,29 @@ const newsletterHTML = `
       });
 
       // Send Receipt to Customer
+     // Send Receipt to Customer
       emailjs.send(serviceID, masterTemplateID, {
         subject_title: "Woohoo! Order Confirmed ⚡",
         message_body: receiptHTML,
         to_email: customerEmail
       }).then(() => {
-        alert("✅ Order Placed Successfully!");
+        // 1. Hide the order modal immediately
         closeOrder();
+        
+        // 2. Show the Success Overlay
+        const successUI = document.getElementById("successOverlay");
+        successUI.style.display = "flex";
+        successUI.querySelector(".success-icon").classList.add("animate-pop");
+
+        // 3. Reset the form
         document.getElementById("orderForm").reset();
 
-        // Delayed Newsletter (30 seconds)
+        // 4. Automatically hide it and refresh/redirect after 3 seconds
+        setTimeout(() => {
+  successUI.style.display = "none";
+  openScratchCard();
+}, 3500);
+        // Delayed Newsletter (stays as is)
         setTimeout(() => {
           emailjs.send(serviceID, masterTemplateID, {
             subject_title: "Welcome to the Fam! ⚡ (Plus a gift)",
@@ -582,7 +765,284 @@ const newsletterHTML = `
       btn.innerText = "Place Order";
     }
   });
+  /* 🎁 COUPON GENERATOR */
 
+function generateCoupon() {
+
+  const discount = Math.floor(Math.random() * 20) + 1; // 1$ – 20$
+
+  const couponCode = "FRUTIQ" + Math.random().toString(36).substring(2,7).toUpperCase();
+
+  const expiry = new Date();
+  expiry.setMonth(expiry.getMonth() + 1); // 1 month validity
+
+  return {
+    code: couponCode,
+    discount: discount,
+    expiry: expiry.toISOString()
+  };
+
+}
+/* 🎟 SCRATCH CARD SYSTEM */
+
+let couponReward = null;
+
+window.openScratchCard = async function() {
+
+  couponReward = generateCoupon();
+
+  document.getElementById("revealedCode").innerText = couponReward.code;
+  document.getElementById("revealedValue").innerText = "$" + couponReward.discount + " OFF";
+
+  const modal = document.getElementById("scratchModal");
+  modal.style.display = "flex";
+
+  initScratch();
+}
+function initScratch() {
+
+  const canvas = document.getElementById("scratchCanvas");
+  const ctx = canvas.getContext("2d");
+
+  ctx.fillStyle = "#C0C0C0";
+  ctx.fillRect(0,0,canvas.width,canvas.height);
+
+  ctx.globalCompositeOperation = "destination-out";
+
+  let isDrawing = false;
+
+  function scratch(x,y){
+    ctx.beginPath();
+    ctx.arc(x,y,22,0,Math.PI*2);
+    ctx.fill();
+  }
+
+  canvas.addEventListener("mousedown", ()=> isDrawing = true);
+
+  canvas.addEventListener("mouseup", ()=> {
+    isDrawing = false;
+
+    revealCoupon();   // ⭐ reveal fully when user stops scratching
+  });
+
+  canvas.addEventListener("mousemove",(e)=>{
+    if(!isDrawing) return;
+
+    const rect = canvas.getBoundingClientRect();
+
+    scratch(
+      e.clientX - rect.left,
+      e.clientY - rect.top
+    );
+  });
+
+}
+async function revealCoupon() {
+  const user = window.auth.currentUser;
+  const couponInput = document.getElementById("couponInput");
+  const canvas = document.getElementById("scratchCanvas");
+  const ctx = canvas.getContext("2d");
+
+  // 1. DATA SAVING (Happens first as you requested)
+  couponInput.value = couponReward.code;
+  if (user) {
+    try {
+      if (typeof saveCoupon === "function") await saveCoupon();
+      if (window.lastOrderId) {
+        const { doc, updateDoc } = await import("https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js");
+        const orderRef = doc(window.db, "users", user.uid, "orders", window.lastOrderId);
+        await updateDoc(orderRef, {
+          rewardCoupon: couponReward.code,
+          rewardDiscount: couponReward.discount,
+          rewardExpiry: couponReward.expiry
+        });
+      }
+    } catch (err) { console.error("Database error:", err); }
+  }
+
+  // 2. CLEAR CANVAS
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  canvas.style.pointerEvents = "none";
+  canvas.style.opacity = "0";
+
+  // 3. THE BOOM (With Auto-Loader)
+  if (typeof confetti !== "function") {
+    console.log("Confetti not found. Loading now...");
+    const script = document.createElement('script');
+    script.src = "https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js";
+    script.onload = () => fireBoom(); // Fire once loaded
+    document.head.appendChild(script);
+  } else {
+    fireBoom(); // Fire immediately if already loaded
+  }
+
+  function fireBoom() {
+    confetti({
+      particleCount: 200,
+      spread: 100,
+      origin: { y: 0.6 },
+      zIndex: 99999, // Force it above all cards
+      disableForReducedMotion: true
+    });
+    
+    // Physical "Pop" effect for the input
+    couponInput.style.transform = "scale(1.2)";
+    setTimeout(() => { couponInput.style.transform = "scale(1)"; }, 200);
+  }
+}
+async function saveCoupon() {
+
+  try {
+
+    const user = window.auth.currentUser;
+    if(!user) return;
+
+    /* 1️⃣ SAVE COUPON */
+    await addDoc(
+      collection(window.db, "users", user.uid, "coupons"),
+      {
+        code: couponReward.code,
+        discount: couponReward.discount,
+        expiry: couponReward.expiry,
+        used: false,
+        createdAt: new Date()
+      }
+    );
+
+    console.log("🎁 Coupon Saved:", couponReward);
+
+    /* 2️⃣ UPDATE LAST ORDER FOR ORDER HISTORY */
+
+    const ordersRef = collection(window.db, "users", user.uid, "orders");
+    const snap = await getDocs(ordersRef);
+
+    let latestOrder = null;
+
+    snap.forEach(docSnap => {
+      const data = docSnap.data();
+
+      if(!latestOrder || new Date(data.orderDate) > new Date(latestOrder.data.orderDate)){
+        latestOrder = {
+          id: docSnap.id,
+          data: data
+        };
+      }
+    });
+
+    if(latestOrder){
+
+      const orderRef = doc(
+        window.db,
+        "users",
+        user.uid,
+        "orders",
+        latestOrder.id
+      );
+
+      await updateDoc(orderRef,{
+        rewardCoupon: couponReward.code,
+        rewardDiscount: couponReward.discount,
+        rewardExpiry: couponReward.expiry
+      });
+
+      console.log("🧾 Order history updated with coupon");
+
+    }
+
+  } catch(error){
+    console.error("Coupon save error:", error);
+  }
+
+}
+window.copyCoupon = function () {
+
+  const code = document.getElementById("revealedCode").innerText;
+
+  if (!code) {
+    alert("No coupon code found!");
+    return;
+  }
+
+  navigator.clipboard.writeText(code)
+  .then(() => {
+
+    const msg = document.getElementById("copyMsg");
+    msg.innerText = "Coupon copied! 🎉";
+
+    setTimeout(() => {
+      msg.innerText = "";
+    }, 2000);
+
+  })
+  .catch(err => {
+    console.error(err);
+    alert("Copy failed. Please copy manually.");
+  });
+
+};
 </script>
+<div id="successOverlay" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255,255,255,0.98); z-index: 9999; flex-direction: column; align-items: center; justify-content: center; font-family: 'Quicksand', sans-serif;">
+  <div class="success-icon" style="font-size: 80px; margin-bottom: 20px; transform: scale(0);">✅</div>
+  <h2 style="font-size: 28px; font-weight: 800; color: #1a1a1a; margin: 0;">Order Confirmed!</h2>
+  <p style="color: #888; margin-top: 10px; font-weight: 600;">Check your email for the receipt ⚡</p>
+</div>
+
+<style>
+  @keyframes popIn {
+    0% { transform: scale(0); opacity: 0; }
+    70% { transform: scale(1.2); opacity: 1; }
+    100% { transform: scale(1); opacity: 1; }
+  }
+  .animate-pop { animation: popIn 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; }
+  @keyframes fadeInDown {
+  from { opacity: 0; transform: translateY(-30px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes pulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.02); }
+  100% { transform: scale(1); }
+}
+
+.scratch-card-wrapper {
+  border: 8px solid rgba(255, 255, 255, 0.1);
+  background-clip: padding-box;
+}
+
+/* Make the awesome button glow on hover */
+button:hover {
+  transform: translateY(-3px) scale(1.05);
+  filter: brightness(1.1);
+}
+</style>
+<div id="scratchModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: radial-gradient(circle, rgba(40,40,40,0.95) 0%, rgba(0,0,0,0.98) 100%); z-index: 10000; flex-direction: column; align-items: center; justify-content: center; font-family: 'Quicksand'; backdrop-filter: blur(10px);">
+  
+  <div style="text-align: center; margin-bottom: 40px; animation: fadeInDown 0.6s ease;">
+    <h2 style="color: #fff; font-size: 42px; font-weight: 800; margin: 0; text-shadow: 0 0 20px rgba(255,177,59,0.5);">Congratulations! 🎉</h2>
+    <p style="color: #ffb13b; font-size: 18px; font-weight: 600; margin-top: 10px; letter-spacing: 1px;">A SPECIAL REWARD JUST FOR YOU</p>
+  </div>
+
+  <div class="scratch-card-wrapper" style="position: relative; width: 500px; height: 250px; background: #fff; border-radius: 30px; box-shadow: 0 25px 80px rgba(0,0,0,0.5); overflow: hidden; display: flex; align-items: center; justify-content: center;">
+    
+    <div style="text-align:center; padding: 20px; animation: pulse 2s infinite;">
+      <p style="font-size: 14px; color: #888; text-transform: uppercase; font-weight: 800; margin-bottom: 5px;">Your Promo Code</p>
+      <h3 id="revealedCode" style="font-size: 48px; color: #ffb13b; margin: 0; font-weight: 900; letter-spacing: -1px;"></h3>
+      <p id="revealedValue" style="font-size: 22px; font-weight: 800; color: #1a1a1a; margin: 10px 0 20px 0;"></p>
+
+      <button onclick="copyCoupon()" style="background: #000; color: #fff; border: none; padding: 12px 30px; border-radius: 14px; font-weight: 800; cursor: pointer; transition: 0.3s; box-shadow: 0 10px 20px rgba(0,0,0,0.1);">
+        COPY & USE NOW
+      </button>
+      <p id="copyMsg" style="font-size: 13px; color: #27ae60; margin-top: 10px; font-weight: 700; height: 15px;"></p>
+    </div>
+
+    <canvas id="scratchCanvas" width="500" height="250" style="position: absolute; top: 0; left: 0; cursor: url('https://cur.cursors-4u.net/others/oth-2/oth166.cur'), auto; touch-action: none; z-index: 2; transition: opacity 0.6s ease;"></canvas>
+  </div>
+
+  <button onclick="location.reload()" style="margin-top: 50px; background: linear-gradient(135deg, #ffb13b, #f39c12); color: #fff; border: none; padding: 18px 60px; border-radius: 50px; font-weight: 900; font-size: 18px; cursor: pointer; box-shadow: 0 15px 30px rgba(255,177,59,0.3); transition: 0.3s;">
+    COLLECT REWARD
+  </button>
+</div>
+
 </body>
 </html>

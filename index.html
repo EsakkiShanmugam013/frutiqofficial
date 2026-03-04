@@ -12,9 +12,8 @@
   <link rel="icon" href="favicon.ico">
   <script src="https://cdn.jsdelivr.net/npm/emailjs-com@3/dist/email.min.js"></script>
 <script>
-(function(){ emailjs.init("gvPecLwC73y7pY9UV"); })();
+(function(){ emailjs.init("cCBmAQH1LRiPSUKO3"); })();
 </script>
-
   <!-- HOME PAGE CSS (DO NOT TOUCH) -->
   <link rel="stylesheet" href="style.css">
 
@@ -452,10 +451,11 @@ window.onload = () => setFlavour("mango");
 
     // ✅ SEND WELCOME EMAIL (EmailJS)
     emailjs.send(
-      "service_naplmcd",      // your service ID
-      "template_l1bzfbg",     // your template ID
+      "service_iyhht68",      // your service ID
+      "template_1y5m1zt",     // your template ID
       {
         to_email: email,
+        subject_title: "Welcome Email",
         user_name: name,
         message_body: `
 Hi ${name},
