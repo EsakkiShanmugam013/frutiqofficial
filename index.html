@@ -124,7 +124,7 @@
 .toast-message {
   position: fixed;
   top: 30px;
-  right: -350px; 
+  right: -550px; 
   /* 🚩 FIXED: Changed background to a modern dark or soft green */
   background: #2d3436; 
   color: white;
@@ -507,6 +507,23 @@ Team FRUTIQ
       loginMsg.innerText = "Invalid credentials ❌";
     }
   };
+  /* 🔑 FORGOT PASSWORD */
+window.forgotPassword = async () => {
+  const email = loginEmail.value;
+
+  if (!email) {
+    showToast("Please enter your email first.");
+    return;
+  }
+
+  try {
+    await sendPasswordResetEmail(auth, email);
+    showToast("Password reset email sent 📧 Check your inbox or spam");
+  } catch (error) {
+    console.error(error);
+    showToast("Error sending reset email ❌");
+  }
+};
    /* 🔁 THIS IS WHAT LOADS HOME PAGE */
 
   /* 🔁 UPDATED AUTH LISTENER */
