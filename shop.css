@@ -9,7 +9,7 @@ body {
   background-image:url("images/bg-mango.jpg");
   background-size: cover;
   color: #fff;
-  overflow:hidden;
+  overflow:auto;
 }
 a {
   text-decoration: none;   /* remove underline */
@@ -328,3 +328,4 @@ a {
     font-weight: 700; 
   }
 }
+
